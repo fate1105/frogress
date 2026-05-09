@@ -8,34 +8,41 @@
 
 ---
 
-## 🌌 Các Tính Năng Cốt Lõi (Core Features)
+## 🌌 Các Module Tu Hành Cốt Lõi (Core Modules)
 
-*   **⚡ Linh Âm Động (Ambient Focus):** 
-    *   Hệ thống Pomodoro chuyên sâu tích hợp phát nhạc bế quan.
-    *   Giao diện nhập nhạc thủ công thông minh (nạp âm thanh mưa rơi, tiếng suối, gió thổi, lửa trại) giúp giảm dung lượng file đóng gói từ **1.2GB xuống chỉ còn 30MB**!
-*   **🐸 Hệ Thống Đột Phá Cảnh Giới (Gamification):**
-    *   Tích lũy Tu Vi khi hoàn thành nhiệm vụ để đột phá cảnh giới (từ *Ếch Tụ Khí* lên tới *Ếch Phi Thăng*, *Ếch Chân Tiên*).
+*   **⚡ Tu Luyện (Focus & Pomodoro - `focus`):**
+    *   Hệ thống đếm giờ Pomodoro chuyên sâu tích hợp phát nhạc bế quan.
+    *   Hệ thống nhập nhạc thủ công thông minh (Nạp âm thanh mưa rơi, tiếng suối, gió thổi, lửa trại) giúp giảm dung lượng tệp cài đặt từ **1.2GB xuống chỉ còn 30MB**!
+*   **📋 Nhiệm Vụ Tông Môn (Todolist & Daily Quests - `todolist`):**
+    *   Quản lý danh sách việc cần làm (Todo-list) của đạo hữu.
+    *   Tích hợp **3 nhiệm vụ thói quen lành mạnh mỗi ngày** (Uống đủ nước, Tập thể dục, Lập kế hoạch ngày mai...) với tiêu đề đời sống ngắn gọn, gần gũi.
+    *   Cơ chế tự động xóa các nhiệm vụ thói quen chưa làm của ngày cũ khi bắt đầu một ngày mới.
+*   **📖 Tàng Kinh Các (Notes Manager - `notes`):**
+    *   Nơi đạo hữu ghi chép nhanh ý tưởng, ghi chú cá nhân và các kế hoạch tu luyện dài hạn.
+*   **🔤 Ngoại Ngữ Chân Kinh (TOEIC Vocab Practice - `toeic`):**
+    *   Rèn luyện và học từ vựng TOEIC ngẫu nhiên giúp đạo hữu đột phá trình độ ngoại ngữ.
+*   **🐸 Tu Hành Lục (Profile & Stats - `profile`):**
+    *   Ghi nhận toàn bộ thành quả tu luyện của đạo hữu.
+    *   Tích lũy Tu Vi khi hoàn thành nhiệm vụ để đột phá cảnh giới (từ *Ếch Tụ Khí* đột phá lên tới *Ếch Phi Thăng*, *Ếch Chân Tiên*).
     *   Hiệu ứng pháo hoa chúc mừng đột phá lung linh huyền ảo.
-*   **📋 Nhật Nhiệm Bảng (Daily Quests):**
-    *   Mỗi ngày tự động lựa chọn ngẫu nhiên **3 nhiệm vụ thói quen lành mạnh** (Uống đủ nước, Tập thể dục, Học tiếng Anh...).
-    *   Cơ chế tự động dọn dẹp các nhiệm vụ chưa hoàn thành của ngày cũ khi sang ngày mới, giữ bảng nhiệm vụ luôn mới mẻ.
-*   **📥 Linh Âm Các (YouTube Downloader):**
-    *   Tải nhạc và video từ YouTube tốc độ cao.
-    *   Tự động trích xuất ảnh bìa và metadata đầy đủ.
-    *   Chạy ngầm luồng con ẩn hoàn toàn cửa sổ CMD dòng lệnh trên Windows, mang lại trải nghiệm mượt mà không tì vết.
-*   **📖 Tông Môn Tàng Thư (Notes & Todolist):**
-    *   Ghi chép nhanh ý tưởng, kế hoạch tu luyện.
-    *   Quản lý danh sách việc cần làm (Todo-list) khoa học.
-*   **📣 Anh Ngữ Tiên Đài (English Reminder):**
-    *   Hệ thống học từ vựng TOEIC/IELTS ngẫu nhiên, nhắc nhở thông minh qua thông báo hệ thống Windows (Windows Toast Notifications).
+*   **🎵 Linh Âm Động (Music & YouTube Downloader - `youtube`):**
+    *   Quản lý danh sách nhạc tu luyện cá nhân.
+    *   Hỗ trợ tải và trích xuất nhạc từ YouTube tốc độ cao, tự động lấy ảnh bìa album và điền đầy đủ metadata.
+    *   *Đặc biệt:* Luồng tải chạy ẩn hoàn toàn cửa sổ dòng lệnh CMD trên Windows, mang lại trải nghiệm mượt mà không tì vết.
+*   **✉️ Linh Hạc Truyền Tin (System Reminders - `reminders`):**
+    *   Hệ thống nhắc nhở thông minh qua thông báo hệ thống Windows (Windows Toast Notifications).
+*   **📦 Vạn Bảo Khố (Universal Downloader - `omniloader`):**
+    *   Công cụ hỗ trợ tải tệp đa năng, tiện ích phong phú.
+*   **✍️ Tiên Cảnh Thơ Ca (Threads Lyric Extractor - `threads`):**
+    *   Khai phá, sưu tầm và lọc lời thơ ca, các chủ đề chia sẻ chất lượng cao.
 
 ---
 
 ## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
 
 *   **Backend:** Python + `Eel` (Cầu nối giao tiếp hai chiều Python <-> JS).
-*   **Frontend:** HTML5 + CSS3 (Vanilla CSS Custom) + TailwindCSS (giao diện Responsive cao cấp, hỗ trợ Dark Mode tối ưu).
-*   **Tiến trình phụ:** `ffmpeg` & `ffprobe` xử lý âm thanh đa luồng.
+*   **Frontend:** HTML5 + CSS3 (Vanilla CSS Custom) + TailwindCSS (Giao diện Responsive cao cấp, hỗ trợ Dark Mode).
+*   **Tiến trình phụ:** `ffmpeg` & `ffprobe` xử lý dữ liệu âm thanh đa luồng.
 *   **Đóng gói:** `PyInstaller` tối ưu hóa môi trường ảo sạch.
 
 ---
@@ -67,7 +74,7 @@
     .\build_app.cmd
     ```
 2.  **Cơ chế hoạt động của trình đóng gói thông minh:**
-    *   Tự động khởi tạo một môi trường ảo (Virtual Environment) hoàn toàn độc lập và sạch sẽ.
+    *   Tự động khởi tạo một môi trường ảo (Virtual Environment) sạch sẽ.
     *   Chỉ tải những thư viện tối thiểu cần thiết để vận hành ứng dụng (giảm dung lượng file xuất ra xuống mức tối đa).
     *   Nén toàn bộ thư mục ứng dụng thành file ZIP phân phối nằm trong thư mục `/dist` có tên dạng `Frogress_v1.x_Release.zip`.
     *   Người dùng cuối chỉ cần giải nén file ZIP này và chạy tệp `Frogress.exe` là có thể tu tiên ngay lập tức!
