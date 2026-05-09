@@ -1,0 +1,131 @@
+<style>
+@keyframes shake {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    10% { transform: translate(-2px, -1px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(0px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(2px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(2px, 2px) rotate(0deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+</style>
+
+<div class="space-y-8 animate-[fadeIn_0.5s]">
+    <!-- Welcome Section -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/20 to-purple-500/10 p-6 md:p-8 border border-primary/20 shadow-lg">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <!-- Left Side: Greeting & Fate Fact -->
+            <div class="max-w-2xl flex-1">
+                <h1 id="greeting-text" class="text-3xl md:text-4xl font-bold text-white mb-3">Xin chào!</h1>
+                <div class="flex items-start gap-3 bg-black/20 backdrop-blur-md p-4 rounded-2xl border border-white/5">
+                    <span id="dash-fate-icon" class="text-2xl mt-1">🐸</span>
+                    <div>
+                        <h4 id="dash-fate-title" class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Fate-fact</h4>
+                        <p id="dash-fate-content" class="text-main font-medium italic text-sm md:text-base">"Mỗi ngày là một cơ hội để bạn trở nên tốt hơn."</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side: Ultra-compact Fortune Card -->
+            <div id="daily-fortune-section" class="flex items-center gap-4 bg-black/20 backdrop-blur-md p-4 rounded-2xl border border-black/50 w-full lg:w-80 shrink-0 transition-all duration-300 relative overflow-hidden self-end">
+                <div id="fortune-wood-stick" class="w-10 h-10 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-xl transition-all duration-500 shrink-0">
+                    🔮
+                </div>
+                <div class="flex-1 min-w-0 flex flex-col justify-between text-left h-full">
+                    <div id="fortune-description">
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-gray-400 block">Quẻ hôm nay</span>
+                        <span class="font-extrabold text-xs text-white block mt-0.5">Chưa gieo quẻ</span>
+                        <span class="block text-[10px] text-gray-400 mt-1 leading-relaxed">Hãy quay quẻ chiêm tinh để nhận khí vận.</span>
+                    </div>
+                    <div class="mt-2">
+                        <button id="btn-roll-fortune" onclick="rollDailyFortune()" class="w-full bg-primary hover:brightness-110 text-black font-extrabold py-1.5 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all">
+                            Gieo Quẻ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Background decorative element -->
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Focus Stats -->
+        <div class="bg-card p-6 rounded-3xl border border-border/50 shadow-sm hover:shadow-md transition-all group">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    ⏱️
+                </div>
+                <h3 class="font-bold text-dim group-hover:text-primary transition-colors">Tu luyện hôm nay</h3>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span id="stat-focus-time" class="text-4xl font-bold text-white">0</span>
+                <span class="text-dim">phút tu vi</span>
+            </div>
+        </div>
+
+        <!-- Task Stats -->
+        <div class="bg-card p-6 rounded-3xl border border-border/50 shadow-sm hover:shadow-md transition-all group">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    ✅
+                </div>
+                <h3 class="font-bold text-dim group-hover:text-primary transition-colors">Nhiệm vụ tông môn</h3>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span id="stat-pending-tasks" class="text-4xl font-bold text-white">0</span>
+                <span class="text-dim">nhiệm vụ chờ xử lý</span>
+            </div>
+        </div>
+
+        <!-- Frog Stats (Gamification) -->
+        <div onclick="document.querySelector('[onclick*=\'profile\']').click()" class="bg-card p-6 rounded-3xl border border-border/50 shadow-sm hover:shadow-md transition-all group cursor-pointer hover:border-primary/50 relative">
+            <div class="absolute top-4 right-4 text-xs text-gray-500 group-hover:text-primary transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </div>
+            <div class="flex items-center gap-4 mb-4">
+                <div id="frog-evolution-icon" class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                    🐸
+                </div>
+                <div>
+                    <span id="frog-level-name" class="text-lg font-bold text-white group-hover:text-primary transition-colors">Ếch Tập Sự</span>
+                    <div class="text-xs font-medium text-primary">Cảnh giới <span id="stat-level">1</span></div>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs mb-1">
+                    <span class="text-dim">Tu vi: <span id="stat-xp">0</span> Tu vi</span>
+                    <span id="xp-to-next" class="text-dim">/ 200 Tu vi</span>
+                </div>
+                <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                    <div id="xp-progress-bar" class="bg-primary h-full transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <button onclick="document.querySelector('[onclick*=\'focus\']').click()" class="flex flex-col items-center justify-center p-6 rounded-2xl bg-gray-800/40 border border-border/30 hover:bg-primary/10 hover:border-primary/50 transition-all gap-3 group">
+            <img src="assets/icons/menu-pomodoro.png" class="w-8 h-8 object-contain group-hover:scale-110 transition-transform">
+            <span class="text-sm font-medium">Tu luyện</span>
+        </button>
+        <button onclick="document.querySelector('[onclick*=\'todolist\']').click()" class="flex flex-col items-center justify-center p-6 rounded-2xl bg-gray-800/40 border border-border/30 hover:bg-primary/10 hover:border-primary/50 transition-all gap-3 group">
+            <img src="assets/icons/menu-todo.png" class="w-8 h-8 object-contain group-hover:scale-110 transition-transform">
+            <span class="text-sm font-medium">Nhiệm vụ tông môn</span>
+        </button>
+        <button onclick="document.querySelector('[onclick*=\'notes\']').click()" class="flex flex-col items-center justify-center p-6 rounded-2xl bg-gray-800/40 border border-border/30 hover:bg-primary/10 hover:border-primary/50 transition-all gap-3 group">
+            <img src="assets/icons/menu-notes.png" class="w-8 h-8 object-contain group-hover:scale-110 transition-transform">
+            <span class="text-sm font-medium">Tàng kinh các</span>
+        </button>
+        <button onclick="document.querySelector('[onclick*=\'toeic\']').click()" class="flex flex-col items-center justify-center p-6 rounded-2xl bg-gray-800/40 border border-border/30 hover:bg-primary/10 hover:border-primary/50 transition-all gap-3 group">
+            <img src="assets/icons/menu-english.png" class="w-8 h-8 object-contain group-hover:scale-110 transition-transform">
+            <span class="text-sm font-medium">Ngoại ngữ chân kinh</span>
+        </button>
+    </div>
+</div>

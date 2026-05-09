@@ -1,0 +1,9 @@
+eel>=0.16.0
+yt-dlp>=2024.03.10
+pyinstaller>=6.5.0
+pystray>=0.19.3
+pillow>=10.0.0
+pygame>=2.5.2
+winotify>=1.1.0
+gevent>=23.9.1
+google-genai>=1.0.0

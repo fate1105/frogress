@@ -1,0 +1,172 @@
+<div class="flex flex-col h-[calc(100vh-80px)] relative animate-[fadeIn_0.4s]">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-card p-6 rounded-3xl border border-border shadow-lg gap-4 mb-6 shrink-0 z-20">
+        <div>
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <img src="assets/icons/menu-music.png" class="w-8 h-8 object-contain"> Linh Âm Động
+            </h1>
+            <p class="text-gray-400 text-sm mt-1">
+                <span id="total-songs" class="font-bold text-primary">0 bài hát</span> •
+                <span id="total-duration">Đang tính...</span>
+            </p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="eel.open_spotify_app()()" title="Mở Spotify Desktop"
+                class="w-11 h-11 bg-gray-800 hover:bg-gray-700 text-spotify rounded-xl font-bold shadow-lg transition-all flex items-center justify-center border border-border hover:scale-105 active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.6 14.4c-.2.3-.6.4-.9.2-2.5-1.5-5.6-1.8-9.3-1-.3.1-.7-.1-.8-.4-.1-.3.1-.7.4-.8 4.1-.9 7.5-.5 10.3 1.2.3.2.4.6.3.8zm1.3-2.9c-.2.4-.7.5-1.1.3-2.9-1.8-7.3-2.4-10.7-1.3-.5.1-.9-.1-1.1-.6-.1-.5.1-.9.6-1.1 3.9-1.2 8.8-.6 12 1.4.3.2.5.7.3 1.3zm.1-3c-3.5-2.1-9.2-2.3-12.5-1.3-.6.2-1.2-.1-1.4-.7-.2-.6.1-1.2.7-1.4 3.9-1.1 10.3-.9 14.3 1.5.5.3.7.9.4 1.4-.3.5-.9.7-1.5.5z"/>
+                </svg>
+            </button>
+            <button onclick="toggleDownloadForm()" title="Thêm bài hát mới"
+                class="w-11 h-11 bg-spotify hover:brightness-110 text-black rounded-xl font-bold shadow-lg shadow-spotify/20 transition-all flex items-center justify-center border border-green-500/30 hover:scale-105 active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Download Form -->
+    <div id="download-section" class="hidden bg-card p-6 rounded-2xl border border-gray-800 border-l-4 border-l-spotify mb-6 animate-[fadeIn_0.3s] z-20 shrink-0 shadow-lg">
+        <label class="block text-sm font-semibold mb-2 text-white">Dán link YouTube (Mỗi link 1 dòng):</label>
+        <textarea id="ytb-links" class="w-full h-24 p-4 rounded-xl bg-dark border border-gray-700 text-white focus:border-primary outline-none transition-all font-mono" placeholder="https://youtube.com/..."></textarea>
+        <div class="flex justify-between items-center mt-4">
+            <p id="ytb-status" class="font-bold text-sm"></p>
+            <div class="flex gap-3">
+                <button class="px-5 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 font-bold transition-colors" onclick="toggleDownloadForm()">Hủy</button>
+                <button class="px-5 py-2 bg-spotify text-black rounded-lg hover:brightness-110 font-bold flex items-center gap-2 transition-all hover:scale-105 active:scale-95" onclick="startDownload()">
+                    <img src="assets/icons/icon-download.png" class="w-4 h-4 object-contain"> Tải xuống
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 relative z-10 pb-4">
+        
+        <!-- Left Pane: Now Playing (YTM Style) -->
+        <div class="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 bg-card/60 backdrop-blur-3xl border border-border shadow-2xl rounded-3xl relative overflow-hidden">
+            
+            <div class="relative z-10 flex flex-col items-center w-full max-w-lg h-full justify-center">
+                
+                <!-- Album Art Large -->
+                <div id="player-cover-large" style="aspect-ratio: 1 / 1;" class="w-[85%] max-w-[500px] rounded-3xl bg-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden mb-10 transition-transform duration-500 flex items-center justify-center group/cover">
+                    <!-- Default SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#1ed760" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-50">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                </div>
+                
+                <!-- Track Info -->
+                <div class="text-center w-full mb-10 px-4">
+                    <h2 id="player-title-large" class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white truncate mb-3 drop-shadow-md tracking-tight">Chưa phát bài nào</h2>
+                    <p id="player-artist-large" class="text-gray-300 text-lg sm:text-xl truncate font-medium">Vui lòng chọn bài từ danh sách</p>
+                </div>
+
+                <!-- Controls Wrapper -->
+                <div class="w-full flex flex-col items-center gap-8 px-4">
+                    <!-- Progress Bar -->
+                    <div class="flex items-center gap-4 w-full text-sm font-medium text-gray-300">
+                        <span id="curr-time" class="w-12 text-right opacity-80">0:00</span>
+                        <div class="relative flex-1 h-1.5 group/progress">
+                            <input type="range" id="progress-bar" value="0" max="100" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                            <div id="progress-bg" class="absolute inset-0 bg-white/20 rounded-full"></div>
+                            <div id="progress-fill" class="absolute inset-y-0 left-0 bg-white group-hover/progress:bg-spotify rounded-full transition-all" style="width: 0%"></div>
+                            <div id="progress-thumb" class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] opacity-0 group-hover/progress:opacity-100 transition-all pointer-events-none" style="left: 0%"></div>
+                        </div>
+                        <span id="total-time" class="w-12 opacity-80">0:00</span>
+                    </div>
+
+                    <!-- Media Controls -->
+                    <div class="flex items-center gap-6 sm:gap-10">
+                        <button id="btn-shuffle" onclick="toggleShuffle()" class="ctrl-icon group p-2 hover:bg-white/10 rounded-full transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:text-white transition-colors">
+                                <polyline points="16 3 21 3 21 8"></polyline>
+                                <line x1="4" y1="20" x2="21" y2="3"></line>
+                                <polyline points="21 16 21 21 16 21"></polyline>
+                                <line x1="15" y1="15" x2="21" y2="21"></line>
+                                <line x1="4" y1="4" x2="9" y2="9"></line>
+                            </svg>
+                        </button>
+                        
+                        <button onclick="prevTrack()" class="text-white hover:text-spotify p-2 hover:bg-white/10 rounded-full transition-all active:scale-90">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                                <line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"></line>
+                            </svg>
+                        </button>
+                        
+                        <button id="btn-play" onclick="togglePlay()" class="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:bg-spotify">
+                            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="ml-1">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                        </button>
+                        
+                        <button onclick="nextTrack()" class="text-white hover:text-spotify p-2 hover:bg-white/10 rounded-full transition-all active:scale-90">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                                <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"></line>
+                            </svg>
+                        </button>
+                        
+                        <button id="btn-loop" onclick="toggleLoop()" class="ctrl-icon group p-2 hover:bg-white/10 rounded-full transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:text-white transition-colors">
+                                <polyline points="17 1 21 5 17 9"></polyline>
+                                <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                                <polyline points="7 23 3 19 7 15"></polyline>
+                                <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Volume Control -->
+                    <div class="flex items-center gap-3 w-full max-w-[250px] mt-6 opacity-60 hover:opacity-100 transition-opacity">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                        <div class="relative flex-1 h-1.5 group/vol">
+                            <input type="range" id="volume-bar" value="100" max="100" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                            <div id="volume-bg" class="absolute inset-0 bg-white/20 rounded-full"></div>
+                            <div id="volume-fill" class="absolute inset-y-0 left-0 bg-white group-hover/vol:bg-spotify rounded-full transition-all" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Pane: Playlist / Queue -->
+        <div class="w-full lg:w-1/2 bg-card/80 border border-border shadow-2xl rounded-3xl overflow-hidden flex flex-col backdrop-blur-md relative z-10">
+            <div class="px-6 py-5 border-b border-white/5 text-sm font-bold text-white uppercase tracking-widest bg-dark/40 flex justify-between items-center backdrop-blur-xl">
+                <span>Danh sách phát</span>
+                <span class="text-xs text-spotify bg-spotify/10 px-3 py-1 rounded-full font-medium" id="queue-count">0 Bài hát</span>
+            </div>
+            
+            <div id="mp3-list" class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-1">
+                <!-- Tracks will be injected here via JS -->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+/* Ẩn thanh cuộn mặc định và làm cho nó đẹp hơn */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+</style>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frogress</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="/eel.js"></script>
+
+    <script>
+        // Cấu hình Tailwind Theme
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: 'var(--color-bg-base)',
+                        card: 'var(--color-bg-card)',
+                        border: 'var(--color-border)',
+                        spotify: '#1ed760',
+                        primary: '#3b82f6',
+                        white: 'var(--color-white)',
+                        black: 'var(--color-black)',
+                        title: 'var(--color-text-title)',
+                        main: 'var(--color-text-main)',
+                        dim: 'var(--color-text-dim)',
+                        gray: {
+                            100: 'var(--color-gray-100)',
+                            200: 'var(--color-gray-200)',
+                            300: 'var(--color-gray-300)',
+                            400: 'var(--color-gray-400)',
+                            500: 'var(--color-gray-500)',
+                            600: 'var(--color-gray-600)',
+                            700: 'var(--color-gray-700)',
+                            800: 'var(--color-gray-800)',
+                            900: 'var(--color-gray-900)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <script>
+        // Init logic theme để tránh FOUC (Flash of Unstyled Content)
+        if (localStorage.getItem('theme') === 'light' || (!('theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
+    <style>
+        :root {
+            --color-bg-base: #f8fafc;
+            --color-bg-card: #ffffff;
+            --color-border: #e2e8f0;
+
+            --color-text-title: #0f172a;
+            --color-text-main: #334155;
+            --color-text-dim: #64748b;
+
+            --color-white: #0f172a;
+            --color-black: #ffffff;
+
+            --color-gray-100: #1e293b;
+            --color-gray-200: #334155;
+            --color-gray-300: #475569;
+            --color-gray-400: #94a3b8;
+            --color-gray-500: #64748b;
+            --color-gray-600: #94a3b8;
+            --color-gray-700: #f1f5f9;
+            --color-gray-800: #e2e8f0;
+            --color-gray-900: #ffffff;
+        }
+
+        .dark {
+            color-scheme: dark;
+            --color-bg-base: #0f1115;
+            --color-bg-card: #181a20;
+            --color-border: #2b2d35;
+
+            --color-text-title: #ffffff;
+            --color-text-main: #f1f5f9;
+            --color-text-dim: #94a3b8;
+
+            --color-white: #ffffff;
+            --color-black: #000000;
+
+            --color-gray-100: #f1f5f9;
+            --color-gray-200: #e2e8f0;
+            --color-gray-300: #cbd5e1;
+            --color-gray-400: #94a3b8;
+            --color-gray-500: #64748b;
+            --color-gray-600: #4b5563;
+            --color-gray-700: #334155;
+            --color-gray-800: #1e293b;
+            --color-gray-900: #0f172a;
+        }
+
+        /* Một chút CSS tùy chỉnh cho các trạng thái không thể xử lý bằng class thuần */
+        .sidebar-transition {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Hiệu ứng ẩn text khi sidebar thu gọn */
+        .collapsed .menu-text,
+        .collapsed .logo-text {
+            display: none;
+            opacity: 0;
+        }
+
+        .collapsed {
+            width: 72px !important;
+        }
+
+        /* Responsive Sidebar Override */
+        @media (max-width: 768px) {
+            .sidebar-mobile-open {
+                transform: translateX(0) !important;
+            }
+        }
+
+        /* Custom Scrollbar cho Content */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
+        /* Active State cho Menu Button */
+        .menu-btn.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            box-shadow: inset 4px 0 0 #3b82f6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
+        /* --- FLASHCARD 3D FLIP CSS --- */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute !important;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            top: 0;
+            left: 0;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s;
+        }
+
+        .flip-card-front {
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        .flip-card-back {
+            z-index: 1;
+            transform: rotateY(180deg);
+        }
+
+        .flipped .flip-card-front {
+            z-index: 1;
+            transform: rotateY(-180deg);
+        }
+
+        .flipped .flip-card-back {
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        /* --- TOEIC STATS & INPUT CSS --- */
+        .stats-pie {
+            background: conic-gradient(
+                var(--color-spotify) var(--p-mastered), 
+                var(--color-primary) var(--p-mastered) var(--p-learning), 
+                var(--color-border) var(--p-learning) 100%
+            );
+        }
+
+        .typing-input:focus {
+            box-shadow: 0 0 15px rgba(30, 215, 96, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-gray-100 h-screen flex overflow-hidden font-sans relative transition-colors duration-300">
+
+    <!-- Mobile Backdrop -->
+    <div id="mobile-overlay" onclick="toggleSidebar()"
+        class="fixed inset-0 bg-black/60 z-[40] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="sidebar-transition absolute md:relative w-[260px] bg-card border-r border-border flex flex-col z-50 h-full -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+        <div class="flex items-center justify-between p-5 border-b border-border/50 mb-2">
+            <div onclick="loadModule(null, 'dashboard')" class="flex items-center gap-3 overflow-hidden cursor-pointer hover:opacity-70 transition-all">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-blue-400 p-[2px] shadow-lg shrink-0">
+                    <div class="w-full h-full bg-dark rounded-[9px] flex items-center justify-center overflow-hidden">
+                        <img src="icon.png" alt="Logo" class="w-6 h-6 object-contain"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+                <span class="logo-text font-bold text-xl tracking-tighter whitespace-nowrap">FROGRESS</span>
+            </div>
+            <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-800 rounded-lg text-gray-400 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-3 space-y-1">
+            <button onclick="loadModule(this, 'focus')"
+                class="menu-btn active w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <img src="assets/icons/menu-pomodoro.png" class="w-6 h-6 object-contain">
+                <span class="menu-text font-medium whitespace-nowrap">Tu luyện</span>
+            </button>
+
+            <button onclick="loadModule(this, 'todolist')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <img src="assets/icons/menu-todo.png" class="w-6 h-6 object-contain">
+                <span class="menu-text font-medium whitespace-nowrap">Nhiệm vụ tông môn</span>
+            </button>
+
+            <button onclick="loadModule(this, 'notes')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <img src="assets/icons/menu-notes.png" class="w-6 h-6 object-contain">
+                <span class="menu-text font-medium whitespace-nowrap">Tàng kinh các</span>
+            </button>
+
+            <button onclick="loadModule(this, 'toeic')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <img src="assets/icons/menu-english.png" class="w-6 h-6 object-contain">
+                <span class="menu-text font-medium whitespace-nowrap">Ngoại ngữ chân kinh</span>
+            </button>
+
+            <div class="my-3 mx-4 border-t border-border/30"></div>
+
+            <button onclick="loadModule(this, 'profile')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <span class="w-6 h-6 flex items-center justify-center text-xl transition-all">🐸</span>
+                <span class="menu-text font-medium whitespace-nowrap">Tu Hành Lục</span>
+            </button>
+
+            <button onclick="loadModule(this, 'youtube')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <img src="assets/icons/menu-music.png" class="w-6 h-6 object-contain">
+                <span class="menu-text font-medium whitespace-nowrap">Linh âm động</span>
+            </button>
+
+            <button onclick="loadModule(this, 'reminders')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <img src="assets/icons/menu-reminder.png" class="w-6 h-6 object-contain">
+                <span class="menu-text font-medium whitespace-nowrap">Linh hạc truyền tin</span>
+            </button>
+
+            <button onclick="loadModule(this, 'omniloader')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <img src="assets/icons/menu-loader.png" class="w-6 h-6 object-contain">
+                <span class="menu-text font-medium whitespace-nowrap">Vạn bảo khố</span>
+            </button>
+
+            <button onclick="loadModule(this, 'threads')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <img src="assets/icons/menu-threads.png" class="w-6 h-6 object-contain">
+                <span class="menu-text font-medium whitespace-nowrap">Tiên cảnh thơ ca</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-border mt-auto">
+            <button onclick="toggleTheme()"
+                class="w-full flex items-center justify-center py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-primary transition-all group overflow-hidden">
+                <span id="theme-icon" class="text-xl relative w-6 h-6 flex items-center justify-center">
+                    <svg class="dark:hidden absolute w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <svg class="hidden dark:block absolute w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Floating Mobile Toggle -->
+    <button onclick="toggleSidebar()"
+        class="md:hidden absolute top-4 left-4 z-[30] p-2.5 bg-card border border-gray-700 hover:bg-gray-800 rounded-lg text-white shadow-xl transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <main class="flex-1 relative overflow-y-auto p-4 md:p-8 pt-16 md:pt-8 animate-[fadeIn_0.4s]">
+        <!-- Module Content Area -->
+        <div id="app-content" class="h-full">
+            <div class="flex items-center justify-center h-full text-gray-600">
+                <p>Đang khởi tạo hệ thống...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Update Check Modal -->
+    <div id="update-modal" class="hidden fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4 backdrop-blur-md animate-[fadeIn_0.3s]">
+        <div class="relative bg-gradient-to-b from-blue-950/90 to-black/95 w-full max-w-lg rounded-3xl border border-blue-500/50 p-8 text-center shadow-[0_0_50px_rgba(59,130,246,0.25)] overflow-hidden">
+            <!-- Background Glow -->
+            <div class="absolute -inset-10 bg-gradient-to-tr from-blue-500/10 to-indigo-500/10 blur-2xl pointer-events-none rounded-full"></div>
+            
+            <!-- Icon/Visual -->
+            <div class="relative w-32 h-32 mx-auto mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 bg-blue-500/20 rounded-full animate-pulse"></div>
+                <div class="absolute inset-2 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-5xl shadow-lg border border-blue-300">
+                    📣
+                </div>
+            </div>
+            
+            <!-- Text Content -->
+            <h2 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase tracking-widest mb-2">
+                ĐỘT PHÁ PHIÊN BẢN MỚI!
+            </h2>
+            <p id="update-modal-subtitle" class="text-gray-400 text-xs uppercase tracking-widest mb-6 font-semibold">Phát hiện cơ duyên mới • Bản cập nhật cực chất</p>
+            
+            <p class="text-white text-base leading-relaxed mb-4">
+                Hệ thống phát hiện phiên bản mới <span id="update-version-tag" class="text-blue-400 font-bold">v1.3</span> đang chờ đón (Bản hiện tại: <span id="current-version-tag" class="text-gray-400 font-bold">v1.2</span>).
+            </p>
+            
+            <div id="update-changelog-box" class="bg-blue-500/5 border border-blue-500/20 rounded-2xl py-3 px-5 mb-8 text-left text-sm text-gray-300 max-h-40 overflow-y-auto hidden">
+                <strong>💡 Nhật ký cập nhật:</strong>
+                <p id="update-changelog-text" class="mt-1 whitespace-pre-wrap leading-relaxed text-gray-400"></p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+                <button onclick="closeUpdateModal()" class="w-1/3 bg-transparent hover:bg-white/5 text-gray-400 hover:text-white font-semibold py-3 px-6 border border-gray-600 rounded-2xl active:scale-[0.98] transition-all text-sm">
+                    Để sau
+                </button>
+                <button id="update-download-btn" class="w-2/3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-3 px-6 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg text-sm uppercase tracking-wider">
+                    Nâng cấp ngay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breakthrough Modal -->
+    <div id="breakthrough-modal" class="hidden fixed inset-0 bg-black/85 z-[9999] flex items-center justify-center p-4 backdrop-blur-md animate-[fadeIn_0.3s]">
+        <div class="relative bg-gradient-to-b from-amber-950/90 to-black/95 w-full max-w-lg rounded-3xl border border-amber-500/50 p-8 text-center shadow-[0_0_50px_rgba(245,158,11,0.25)] overflow-hidden">
+            <!-- Background Glow -->
+            <div class="absolute -inset-10 bg-gradient-to-tr from-amber-500/10 to-orange-500/10 blur-2xl pointer-events-none rounded-full"></div>
+            
+            <!-- Icon/Visual -->
+            <div class="relative w-32 h-32 mx-auto mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 bg-amber-500/20 rounded-full animate-ping"></div>
+                <div class="absolute inset-2 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-full flex items-center justify-center text-6xl shadow-lg border border-amber-300">
+                    ⚡
+                </div>
+            </div>
+            
+            <!-- Text Content -->
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 uppercase tracking-widest mb-2 animate-pulse">
+                ĐỘT PHÁ THÀNH CÔNG!
+            </h2>
+            <p class="text-gray-400 text-xs uppercase tracking-widest mb-6 font-semibold">Thiên đạo hộ thể • Cảnh giới thăng hoa</p>
+            
+            <p class="text-white text-base leading-relaxed mb-6">
+                Chúc mừng đạo hữu dũng cảm tinh tinh tiến tiến, tu vi đạt đến độ chín muồi! Ngươi đã đột phá thành công lên cảnh giới mới:
+            </p>
+            
+            <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl py-4 px-6 mb-8 inline-block shadow-inner">
+                <span id="breakthrough-level-name" class="text-2xl font-black text-amber-300 tracking-wide">Luyện Khí Kỳ</span>
+            </div>
+            
+            <!-- Action Button -->
+            <button onclick="closeBreakthroughModal()" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-black font-black py-4 px-8 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg text-sm uppercase tracking-wider">
+                Thu nhận tu vi & Tiếp tục tu hành
+            </button>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/toeic.js"></script>
+    <script src="js/threads.js"></script>
+    <script src="js/youtube.js"></script>
+    <script src="js/todolist.js"></script>
+    <script src="js/notes.js"></script>
+    <script src="js/reminders.js"></script>
+    <script src="js/omniloader.js"></script>
+    <script src="js/focus.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

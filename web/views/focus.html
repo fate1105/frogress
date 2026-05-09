@@ -1,0 +1,216 @@
+<div class="w-full animate-[fadeIn_0.3s]">
+    <!-- Header -->
+    <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center bg-card p-6 rounded-2xl border border-border shadow-lg gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-100 flex items-center gap-3">
+                <img src="assets/icons/menu-pomodoro.png" class="w-8 h-8 object-contain"> Tu Luyện Pomodoro
+            </h1>
+            <p class="text-gray-500 text-sm mt-1">Tu luyện tâm tính, khai phá tiềm năng để sớm ngày phi thăng.</p>
+        </div>
+
+        <div class="flex gap-4">
+            <div class="bg-primary/10 border border-primary/20 px-4 py-2 rounded-xl text-center min-w-[100px]">
+                <p class="text-[9px] uppercase font-bold text-primary tracking-wider">Chuỗi ngày</p>
+                <p id="focus-streak" class="text-xl font-bold text-gray-100">0</p>
+            </div>
+            <div class="bg-spotify/10 border border-spotify/20 px-4 py-2 rounded-xl text-center min-w-[100px]">
+                <p class="text-[9px] uppercase font-bold text-spotify tracking-wider">Tổng phút</p>
+                <p id="focus-total-mins" class="text-xl font-bold text-gray-100">0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <!-- LEFT: Timer Section (7/12) -->
+        <div
+            class="lg:col-span-7 bg-card border border-border rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-2xl min-h-[400px]">
+            <!-- Background Decoration -->
+            <div class="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-[100px]"></div>
+
+            <div class="relative w-64 h-64 flex items-center justify-center">
+                <svg class="absolute inset-0 w-full h-full -rotate-90">
+                    <circle cx="128" cy="128" r="115" stroke="currentColor" stroke-width="8" fill="transparent"
+                        class="text-white/5"></circle>
+                    <circle id="timer-progress" cx="128" cy="128" r="115" stroke="currentColor" stroke-width="8"
+                        fill="transparent" stroke-dasharray="722" stroke-dashoffset="0"
+                        class="text-primary transition-all duration-1000 ease-linear"></circle>
+                </svg>
+                <div class="text-center z-10">
+                    <p id="timer-label" class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-2">Đang
+                        tu luyện</p>
+                    <div id="timer-display" class="text-7xl font-bold text-gray-100 tabular-nums tracking-tighter">25:00
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6 mt-10">
+                <button onclick="resetFocusTimer()"
+                    class="p-4 bg-gray-800/40 hover:bg-gray-800 text-gray-400 rounded-2xl transition-all border border-border">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                </button>
+
+                <button id="btn-toggle-timer" onclick="toggleFocusTimer()"
+                    class="w-16 h-16 bg-primary text-white rounded-2xl shadow-lg shadow-primary/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+                    <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <svg id="pause-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+                        viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                </button>
+
+                <button onclick="skipSession()"
+                    class="p-4 bg-gray-800/40 hover:bg-gray-800 text-gray-400 rounded-2xl transition-all border border-border">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m6 17 5-5-5-5"></path>
+                        <path d="m13 17 5-5-5-5"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- RIGHT: Config Section (5/12) stacked vertically -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            <!-- Mode Selector -->
+            <div class="bg-card border border-border rounded-2xl p-5 shadow-lg flex-1">
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-widest">Chu kỳ Tu luyện & Hồi khí</p>
+                <select id="timer-mode-select" onchange="changeFocusPreset(this.value)"
+                    class="w-full bg-dark border border-border p-3.5 rounded-xl text-sm font-bold text-gray-100 outline-none cursor-pointer focus:border-primary transition-all">
+                    <option value="25_5" class="bg-card text-gray-100">Tu luyện 25p | Nghỉ 5p (Pomodoro chuẩn)</option>
+                    <option value="50_10" class="bg-card text-gray-100">Tu luyện 50p | Nghỉ 10p (Tập trung sâu)</option>
+                    <option value="50_5" class="bg-card text-gray-100">Tu luyện 50p | Nghỉ 5p (Hiệu suất cao)</option>
+                    <option value="15_3" class="bg-card text-gray-100">Tu luyện 15p | Nghỉ 3p (Tập trung ngắn)</option>
+                </select>
+                <p class="text-[10px] text-gray-600 mt-2 italic px-1">Lựa chọn chu kỳ tu tập khoa học phù hợp với căn cơ của bạn.
+                </p>
+            </div>
+
+            <!-- Task Selector -->
+            <div class="bg-card border border-border rounded-2xl p-5 shadow-lg flex-1">
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-widest">Gắn Nhiệm vụ tông môn</p>
+                <div class="relative">
+                    <select id="focus-task-select"
+                        class="w-full p-3.5 bg-dark border border-border rounded-xl text-sm font-bold text-gray-100 outline-none focus:border-primary appearance-none cursor-pointer">
+                        <option value="" class="bg-card text-gray-100">-- Không có nhiệm vụ nào --</option>
+                    </select>
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-[10px] text-gray-600 mt-2 italic px-1">Gắn phiên tu luyện với một nhiệm vụ cụ thể để theo
+                    dõi tiến độ đột phá.</p>
+            </div>
+
+            <!-- Ambient Sounds Selector -->
+            <div class="bg-card border border-border rounded-2xl p-5 shadow-lg flex-1">
+                <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-widest">🔊 Âm Thanh Bế Quan</p>
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <button onclick="toggleAmbientSound('rain')" id="btn-sound-rain" class="sound-btn border border-border bg-dark/40 hover:bg-dark text-gray-400 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        🌧️ Mưa rơi
+                    </button>
+                    <button onclick="toggleAmbientSound('stream')" id="btn-sound-stream" class="sound-btn border border-border bg-dark/40 hover:bg-dark text-gray-400 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        🌊 Suối nguồn
+                    </button>
+                    <button onclick="toggleAmbientSound('campfire')" id="btn-sound-campfire" class="sound-btn border border-border bg-dark/40 hover:bg-dark text-gray-400 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        🔥 Lửa trại
+                    </button>
+                    <button onclick="toggleAmbientSound('wind')" id="btn-sound-wind" class="sound-btn border border-border bg-dark/40 hover:bg-dark text-gray-400 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        🍃 Gió núi
+                    </button>
+                </div>
+                <div id="ambient-import-section" class="mt-3 mb-3 flex gap-2">
+                    <select id="import-sound-slot" class="flex-1 p-2 bg-dark border border-border rounded-xl text-[10px] font-bold text-gray-400 outline-none focus:border-primary appearance-none cursor-pointer">
+                        <option value="rain">🌧️ Mưa rơi (rain.mp3)</option>
+                        <option value="stream">🌊 Suối nguồn (stream.mp3)</option>
+                        <option value="campfire">🔥 Lửa trại (campfire.mp3)</option>
+                        <option value="wind">🍃 Gió núi (wind.mp3)</option>
+                    </select>
+                    <button onclick="triggerImportAmbientSoundDirect()" class="bg-dark/40 border border-dashed border-border hover:border-primary text-gray-400 hover:text-primary py-2 px-3 rounded-xl text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5" title="Chọn và nạp file MP3 cho kênh đã chọn">
+                        <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                        Nạp nhạc
+                    </button>
+                    <input type="file" id="ambient-file-input" accept="audio/mp3" class="hidden" onchange="handleAmbientImport(this)">
+                </div>
+                <div class="flex items-center gap-3 bg-dark/40 border border-border rounded-xl px-3 py-2">
+                    <span class="text-xs text-gray-500 font-semibold shrink-0">Âm lượng</span>
+                    <input type="range" id="ambient-volume" min="0" max="1" step="0.1" value="0.5" oninput="changeAmbientVolume(this.value)" class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary">
+                </div>
+            </div>
+
+            <!-- Auto Flow Toggle -->
+            <div class="bg-card border border-border rounded-2xl p-5 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-500 uppercase mb-1 tracking-widest">Tự động chuyển phiên</p>
+                        <p id="auto-flow-status" class="text-xs font-bold text-gray-500">Đang bật</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="auto-flow-toggle" class="sr-only peer" checked
+                            onchange="toggleAutoFlow(this.checked)">
+                        <div
+                            class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                        </div>
+                    </label>
+                </div>
+                <p class="text-[10px] text-gray-600 mt-3 italic px-1 border-t border-white/5 pt-2">Tự động bắt đầu phiên
+                    tiếp theo mà không cần đạo hữu phải ra tay.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section (Bottom) -->
+    <div class="bg-card border border-border rounded-2xl p-6 shadow-lg">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-gray-100">Hiệu suất 7 ngày qua</h3>
+            <span
+                class="text-[10px] text-gray-500 font-bold uppercase tracking-widest px-2 py-1 bg-dark rounded border border-border">Phút
+                tu luyện mỗi ngày</span>
+        </div>
+        <div id="focus-chart" class="flex items-end justify-between h-32 gap-3 pt-6 px-1">
+            <!-- Chart bars injected here -->
+        </div>
+    </div>
+</div>
+
+<!-- Task Finish Modal -->
+<div id="focus-modal"
+    class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden animate-[fadeIn_0.2s]">
+    <div class="bg-card border border-border w-full max-w-sm rounded-3xl p-8 shadow-2xl scale-95 animate-[fadeIn_0.3s]">
+        <div
+            class="w-16 h-16 bg-spotify/20 text-spotify rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+            <img src="assets/icons/status-focus.png" class="w-10 h-10 object-contain">
+        </div>
+        <h2 class="text-xl font-bold text-gray-100 text-center mb-2">Đại công cáo thành!</h2>
+        <p class="text-gray-500 text-center text-sm mb-8">Đạo hữu vừa hoàn thành một phiên tu luyện. Đạo hữu có muốn đánh dấu
+            nhiệm vụ này là hoàn tất không?</p>
+
+        <div class="space-y-3">
+            <button onclick="handleTaskAction(true)"
+                class="w-full py-4 bg-spotify text-black font-bold rounded-xl hover:brightness-110 transition-all">Hoàn
+                thành nhiệm vụ</button>
+            <button onclick="handleTaskAction(false)"
+                class="w-full py-4 bg-gray-800 text-white font-bold rounded-xl hover:bg-gray-700 transition-all">Chỉ lưu
+                dữ liệu thôi</button>
+        </div>
+    </div>
+</div>
+
+<!-- Random Event Overlay -->
+<div id="random-event-modal" class="fixed inset-0 z-[1100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md hidden animate-[fadeIn_0.3s]">
+    <div id="random-event-content" class="w-full max-w-md bg-gradient-to-b from-[#181818] to-black border border-gray-700 rounded-3xl p-8 shadow-2xl relative overflow-hidden text-center">
+        <!-- JS will dynamically populate this container -->
+    </div>
+</div>

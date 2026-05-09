@@ -1,0 +1,79 @@
+<div class="w-full animate-[fadeIn_0.3s]">
+    <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center bg-card p-6 rounded-2xl border border-border shadow-lg gap-4 mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-100 flex items-center gap-3">
+                <img src="assets/icons/menu-loader.png" class="w-8 h-8 object-contain"> Vạn Bảo Khố
+            </h1>
+            <p class="text-gray-500 text-sm mt-1">Thu thập linh khí (video/âm thanh) từ khắp thiên hạ về bản môn.</p>
+        </div>
+        <div
+            class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-xs font-bold border border-primary/20">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            </span>
+            Sẵn sàng
+        </div>
+    </div>
+
+    <!-- Form Tải -->
+    <div
+        class="bg-card p-6 rounded-2xl border border-border shadow-xl backdrop-blur-sm relative overflow-hidden group mb-8">
+        <div
+            class="absolute -right-10 -top-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors">
+        </div>
+
+        <label class="block text-sm font-semibold mb-3 text-gray-300">Dán link vào đây (mỗi link một dòng):</label>
+        <textarea id="omni-urls"
+            class="w-full h-32 p-4 rounded-xl bg-dark border border-border text-gray-100 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-all font-mono placeholder:text-gray-400 mb-6"
+            placeholder="https://www.youtube.com/watch?v=...
+https://www.tiktok.com/@user/video/..."></textarea>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Định dạng -->
+            <div>
+                <label class="block text-sm font-semibold mb-2 text-gray-400">Định dạng đầu ra</label>
+                <div class="flex p-1 bg-dark/80 rounded-xl border border-border">
+                    <button onclick="setOmniMode('video')" id="mode-video"
+                        class="flex-1 py-2 px-4 rounded-lg font-bold text-sm transition-all bg-primary text-white shadow-lg flex items-center justify-center gap-2">
+                        Video (MP4)
+                    </button>
+                    <button onclick="setOmniMode('audio')" id="mode-audio"
+                        class="flex-1 py-2 px-4 rounded-lg font-bold text-sm transition-all text-gray-400 hover:text-white flex items-center justify-center gap-2">
+                        Nhạc (MP3)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chất lượng -->
+            <div id="quality-container">
+                <label class="block text-sm font-semibold mb-2 text-gray-400">Chất lượng Video</label>
+                <select id="omni-quality"
+                    class="w-full py-2.5 px-4 bg-dark border border-border text-gray-100 outline-none focus:border-primary transition-all font-medium">
+                    <option value="best" class="bg-card text-gray-100">Tốt nhất (Mặc định)</option>
+                    <option value="720" class="bg-card text-gray-100">HD 720p</option>
+                    <option value="480" class="bg-card text-gray-100">480p</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="startOmniDownload()"
+            class="w-full py-4 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-lg">
+            <img src="assets/icons/icon-download.png" class="w-6 h-6 object-contain">
+            <span>Bắt đầu tải ngay</span>
+        </button>
+    </div>
+
+    <!-- Danh sách đang tải -->
+    <div id="omni-queue-container" class="hidden">
+        <div class="flex items-center justify-between mb-4 px-2">
+            <h2 class="text-sm font-bold text-gray-400 uppercase tracking-widest">Tiến trình tải xuống</h2>
+            <span id="omni-total-status" class="text-xs text-primary font-bold"></span>
+        </div>
+        <div id="omni-queue" class="space-y-3">
+            <!-- Items sẽ được render ở đây -->
+        </div>
+    </div>
+
+</div>

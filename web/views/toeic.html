@@ -1,0 +1,183 @@
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-card p-6 rounded-2xl border border-border shadow-lg gap-4 mb-6 animate-[fadeIn_0.3s]">
+    <div>
+        <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+            <img src="assets/icons/menu-english.png" class="w-8 h-8 object-contain"> Ngoại Ngữ Chân Kinh
+        </h1>
+        <p class="text-gray-400 text-sm mt-1">
+            <span id="toeic-stats" class="font-bold text-primary">0 bí kíp</span> đang được tu luyện
+        </p>
+    </div>
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center w-full md:w-auto gap-3">
+        <button id="btn-toggle-practice" onclick="togglePracticeMode()" class="w-full sm:w-auto justify-center bg-spotify hover:brightness-110 text-black px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg hover:scale-105 flex items-center gap-2">
+            <span>Luyện tập</span>
+        </button>
+        <label for="import-json-file" class="w-full sm:w-auto justify-center bg-dark hover:bg-gray-800 text-gray-300 border border-border px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg flex items-center gap-2 cursor-pointer">
+            <img src="assets/icons/menu-loader.png" class="w-4 h-4 object-contain">
+            <span>Phục hồi</span>
+            <input type="file" id="import-json-file" accept=".json" class="hidden" onchange="handleFileImport(event)">
+        </label>
+        
+        <!-- AI Generate Bar -->
+        <div class="flex-1 min-w-[200px] flex items-center bg-dark border border-border rounded-xl px-3 focus-within:border-primary transition-all shadow-inner">
+            <input type="text" id="ai-word-input" placeholder="Nhập từ (cách nhau dấu phẩy, VD: fate, revenue)" 
+                   class="bg-transparent border-none outline-none text-white text-sm py-2 px-1 w-full"
+                   onkeypress="if(event.key === 'Enter') generateWithAI()">
+            <button onclick="generateWithAI()" id="btn-ai-gen" title="AI tự động tạo 4 câu hỏi" 
+                    class="p-1.5 hover:bg-primary/20 rounded-lg text-primary transition-all flex items-center gap-1">
+                <span class="text-xs font-bold whitespace-nowrap px-1">AI Gen</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+            </button>
+        </div>
+
+        <button onclick="openToeicModal()" title="Thêm câu hỏi mới" class="w-11 h-11 bg-primary hover:bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-primary/20 transition-all flex items-center justify-center border border-blue-500/50">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Dashboard -->
+<div id="toeic-dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-[fadeIn_0.5s]">
+    <div class="col-span-1 bg-card p-5 rounded-2xl border border-border flex items-center gap-6 shadow-lg">
+        <div id="stats-chart" class="w-20 h-20 rounded-full stats-pie relative flex items-center justify-center shadow-inner" style="--p-mastered: 0%; --p-learning: 0%;">
+            <div class="w-14 h-14 bg-card rounded-full flex items-center justify-center text-[10px] font-bold text-gray-400">STATS</div>
+        </div>
+        <div class="flex-1 space-y-1">
+            <div class="flex justify-between items-center text-xs">
+                <span class="text-gray-500 font-bold">Đã lĩnh hội</span>
+                <span id="stats-mastered-count" class="text-spotify font-bold">0</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <span class="text-gray-500 font-bold">Đang tu luyện</span>
+                <span id="stats-learning-count" class="text-primary font-bold">0</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <span class="text-gray-500 font-bold">Chưa tu luyện</span>
+                <span id="stats-new-count" class="text-gray-400 font-bold">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-span-1 md:col-span-2 bg-card p-5 rounded-2xl border border-border flex flex-col justify-center shadow-lg relative overflow-hidden">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-bold text-gray-300">Mục tiêu hôm nay</h3>
+            <span id="daily-goal-text" class="text-xs font-mono text-spotify font-bold">0/10 câu</span>
+        </div>
+        <div class="w-full h-3 bg-gray-800 rounded-full overflow-hidden">
+            <div id="daily-goal-bar" class="h-full bg-gradient-to-r from-spotify to-green-400 transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p class="text-[10px] text-gray-500 mt-2 italic">Mỗi khi đạo hữu "Đã lĩnh hội" hoặc trả lời đúng bí kíp mới, thanh này sẽ tăng lên!</p>
+        <!-- Decoration -->
+        <div class="absolute -right-4 -bottom-4 opacity-5 rotate-12">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+    </div>
+</div>
+
+<div id="tribulation-banner" class="hidden bg-gradient-to-r from-red-950/80 to-amber-950/80 p-5 rounded-2xl border border-red-500/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 shadow-xl animate-pulse">
+    <div class="flex items-center gap-4">
+        <span class="text-3xl animate-[bounce_1s_infinite]">⚡</span>
+        <div>
+            <h3 class="font-bold text-red-400 text-lg">TÂM MA KIẾP ĐẾN HẠN!</h3>
+            <p class="text-gray-300 text-sm mt-0.5">Đạo hữu có <span id="tribulation-count" class="font-bold text-amber-400">0</span> bí kíp ở mức Đại Viên Mãn. Hãy vượt qua để đưa tất cả lên Xuất Thần Nhập Hóa!</p>
+        </div>
+    </div>
+    <button onclick="startTribulation()" class="bg-gradient-to-r from-red-600 to-amber-600 hover:brightness-110 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all shadow-lg hover:scale-105 whitespace-nowrap">
+        Bắt Đầu Độ Kiếp
+    </button>
+</div>
+
+<div id="toeic-filters" class="flex flex-wrap gap-4 mb-6 items-center">
+    <div class="flex-1 min-w-[200px] relative">
+        <input type="text" id="toeic-search" placeholder="Tìm kiếm từ vựng, câu hỏi..." 
+               class="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:border-primary outline-none transition-all shadow-sm"
+               oninput="renderList()">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </div>
+    <div class="flex gap-2">
+        <button onclick="setStatusFilter('all', this)" class="status-filter-btn active bg-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg border border-transparent transition-all">Tất cả</button>
+        <button onclick="setStatusFilter('new', this)" class="status-filter-btn text-gray-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-transparent transition-all hover:bg-gray-800">Chưa tu luyện</button>
+        <button onclick="setStatusFilter('learning', this)" class="status-filter-btn text-gray-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-border/30 transition-all hover:bg-gray-800">Đang tu luyện</button>
+        <button onclick="setStatusFilter('mastered', this)" class="status-filter-btn text-gray-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-transparent transition-all hover:bg-gray-800">Đã lĩnh hội</button>
+    </div>
+</div>
+
+<div id="toeic-tabs" class="flex gap-2 border-b border-gray-800 mb-6">
+    <button id="btn-tab-vocal" onclick="switchTab('vocal')" class="px-6 py-3 font-bold text-sm border-b-2 border-primary text-white transition-all">
+        Từ vựng (Vocabulary)
+    </button>
+    <button id="btn-tab-grammar" onclick="switchTab('grammar')" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-all">
+        Ngữ pháp (Grammar)
+    </button>
+</div>
+
+<div id="toeic-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-y-auto pb-24 h-[calc(100vh-230px)] custom-scrollbar">
+</div>
+
+<div id="toeic-practice-container" class="hidden flex flex-col items-center justify-start mt-4 w-full min-h-[calc(100vh-230px)] overflow-y-auto pb-12 custom-scrollbar">
+    <!-- Practice Header with Navigation -->
+    <div class="w-full max-w-xl flex justify-between items-center mb-6 px-5 py-3.5 bg-card/50 rounded-2xl border border-border/50 gap-4">
+        <button onclick="togglePracticeMode()" class="flex items-center gap-1.5 text-gray-400 hover:text-white font-bold text-xs transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span>Quay lại</span>
+        </button>
+        <div class="text-sm font-bold text-white tracking-wide" id="practice-header-title">Luyện tập</div>
+        <div id="practice-progress-text" class="text-xs font-mono text-spotify font-bold bg-spotify/10 px-3 py-1 rounded-full border border-spotify/20">0 / 0</div>
+    </div>
+    
+    <div id="flashcard-wrapper" class="w-full flex-1 flex items-center justify-center">
+        <!-- Practice setup panel or actual flashcards will be injected here -->
+    </div>
+</div>
+
+<div id="toeic-modal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center p-4 justify-center backdrop-blur-sm animate-[fadeIn_0.2s]">
+    <div class="bg-card w-full sm:w-[500px] max-h-[90vh] overflow-y-auto custom-scrollbar rounded-2xl border border-gray-700 shadow-2xl flex flex-col transform scale-100 transition-transform">
+        <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center bg-white/5">
+            <h2 class="font-bold text-lg text-white">Thêm câu hỏi mới</h2>
+            <button onclick="closeToeicModal()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+        </div>
+        
+        <div class="p-6 flex flex-col gap-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Phân loại</label>
+                <select id="modal-type" class="w-full p-3 rounded-lg bg-dark border border-gray-700 text-white focus:border-primary outline-none text-sm cursor-pointer">
+                    <option value="vocal">Từ vựng (Vocabulary)</option>
+                    <option value="grammar">Ngữ pháp (Grammar)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Câu hỏi / Từ vựng</label>
+                <textarea id="modal-question" class="w-full p-3 rounded-lg bg-dark border border-gray-700 text-white focus:border-primary outline-none text-sm h-20 resize-none custom-scrollbar" placeholder="Ví dụ: Mandatory (adj) hoặc The new software... _______"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">4 Đáp án (Chọn nút tròn cho đáp án đúng)</label>
+                <div class="space-y-2" id="modal-options">
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="correct-ans" value="0" checked class="w-4 h-4 accent-spotify cursor-pointer">
+                        <input type="text" class="opt-input flex-1 p-2.5 rounded-lg bg-dark border border-gray-700 text-sm text-white focus:border-spotify outline-none" placeholder="Đáp án A">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="correct-ans" value="1" class="w-4 h-4 accent-spotify cursor-pointer">
+                        <input type="text" class="opt-input flex-1 p-2.5 rounded-lg bg-dark border border-gray-700 text-sm text-white focus:border-spotify outline-none" placeholder="Đáp án B">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="correct-ans" value="2" class="w-4 h-4 accent-spotify cursor-pointer">
+                        <input type="text" class="opt-input flex-1 p-2.5 rounded-lg bg-dark border border-gray-700 text-sm text-white focus:border-spotify outline-none" placeholder="Đáp án C">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="correct-ans" value="3" class="w-4 h-4 accent-spotify cursor-pointer">
+                        <input type="text" class="opt-input flex-1 p-2.5 rounded-lg bg-dark border border-gray-700 text-sm text-white focus:border-spotify outline-none" placeholder="Đáp án D">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-6 py-4 border-t border-gray-800 bg-dark/50 flex justify-end gap-3">
+            <button onclick="closeToeicModal()" class="px-5 py-2 rounded-lg font-bold text-sm text-gray-400 hover:text-white transition-colors">Hủy</button>
+            <button onclick="saveNewItem()" id="btn-save-toeic" class="px-5 py-2 bg-spotify hover:brightness-110 text-black rounded-lg font-bold text-sm shadow-md transition-all">
+                Lưu vào kho
+            </button>
+        </div>
+    </div>
+</div>

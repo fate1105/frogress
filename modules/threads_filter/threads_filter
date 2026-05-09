@@ -1,0 +1,101 @@
+// Script này sẽ tự động lướt Threads, nhặt bài thơ theo định dạng "Tác giả, 'Tên bài thơ'"
+// Để chạy script này, bạn chỉ cần copy và dán vào Console của trình duyệt khi đang ở trang Threads.
+
+let poemsSet = new Set();
+let retries = 0;
+let previousScrollY = -1;
+
+console.log("🚀 Bắt đầu lướt Threads và gom nhóm thơ tự động...");
+
+let timer = setInterval(() => {
+    // 1. Quét và nhặt dữ liệu thô (Tránh trùng lặp)
+    let text = document.body.innerText;
+    let regex = /^\s*(.+?),\s*["“'](.+?)["”']/gm;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        poemsSet.add(match[0].trim());
+    }
+    
+    console.clear();
+    console.log(`Đang quét... Đã nhặt được: ${poemsSet.size} bài thơ...`);
+
+    // 2. Cuộn từ từ xuống
+    window.scrollBy(0, window.innerHeight);
+
+    // 3. Kiểm tra kịch đáy
+    if (window.scrollY === previousScrollY) {
+        retries++;
+        if (retries > 7) { 
+            clearInterval(timer);
+            console.log("✅ ĐÃ LƯỚT XONG! Bắt đầu quá trình phân tích và gom nhóm (giống Python)...");
+            processAndSave();
+        }
+    } else {
+        retries = 0;
+        previousScrollY = window.scrollY;
+    }
+}, 1500);
+
+// Hàm này thay thế hoàn toàn cho file Python của bạn
+function processAndSave() {
+    if (poemsSet.size === 0) {
+        console.log("❌ Không tìm thấy bài thơ nào.");
+        return;
+    }
+
+    let authorGroups = {}; // Tương đương defaultdict(list) trong Python
+    let totalPoems = 0;
+
+    // Phân tích tác giả và tên bài thơ từ tập hợp đã nhặt
+    poemsSet.forEach(line => {
+        let extractRegex = /^\s*(.+?),\s*["“'](.+?)["”']/;
+        let match = line.match(extractRegex);
+        
+        if (match) {
+            let author = match[1].trim();
+            let poem = match[2].trim();
+
+            if (!authorGroups[author]) {
+                authorGroups[author] = [];
+            }
+            authorGroups[author].push(poem);
+            totalPoems++;
+        }
+    });
+
+    // Sắp xếp danh sách tác giả từ nhiều đến ít (Tương đương sorted + lambda trong Python)
+    let sortedAuthors = Object.keys(authorGroups).sort((a, b) => {
+        return authorGroups[b].length - authorGroups[a].length;
+    });
+
+    // Dàn trang nội dung để ghi ra file text
+    let finalOutput = "KẾT QUẢ GOM NHÓM THEO TÁC GIẢ\n";
+    finalOutput += `TỔNG SỐ BÀI THƠ TÌM THẤY: ${totalPoems} BÀI\n`;
+    finalOutput += "========================================\n\n";
+
+    sortedAuthors.forEach(author => {
+        let poems = authorGroups[author];
+        finalOutput += `Tác giả: ${author} (${poems.length} bài)\n`;
+        poems.forEach((p, idx) => {
+            finalOutput += `  ${idx + 1}. ${p}\n`;
+        });
+        finalOutput += "------------------------------\n";
+    });
+
+    // In bảng xếp hạng ra Console cho đẹp mắt
+    console.log("\n📊 BẢNG XẾP HẠNG SỐ LƯỢNG BÀI:");
+    sortedAuthors.forEach(author => {
+        console.log(`   ➤ ${author}: ${authorGroups[author].length} bài`);
+    });
+
+    // Tự động tải file đã format hoàn chỉnh về máy
+    let blob = new Blob([finalOutput], { type: 'text/plain;charset=utf-8' });
+    let link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'ket_qua_tho_hoan_chinh.txt'; // File này đã được format sẵn
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    console.log("🎉 Hoàn tất! Hãy kiểm tra file thư mục Download của bạn.");
+}

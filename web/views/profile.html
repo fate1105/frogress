@@ -1,0 +1,142 @@
+<div class="space-y-6 animate-[fadeIn_0.5s] pb-24">
+    <!-- Header Section -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 to-black p-8 border border-border shadow-2xl">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxjaXJjbGUgY3g9IjIiIGN5PSIyIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIi8+Cjwvc3ZnPg==')] opacity-50"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+            <!-- Avatar / Mascot -->
+            <div class="relative">
+                <div id="profile-mascot" class="w-32 h-32 rounded-3xl bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center text-7xl shadow-[0_0_30px_rgba(34,197,94,0.2)]">
+                    🐸
+                </div>
+                <div class="absolute -bottom-4 -right-4 w-12 h-12 bg-primary text-black rounded-xl flex items-center justify-center font-bold text-xl shadow-lg border-2 border-black transform rotate-12" title="Cảnh giới hiện tại">
+                    <span id="profile-level">1</span>
+                </div>
+            </div>
+
+            <div class="flex-1 w-full space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <div>
+                        <h1 id="profile-title" class="text-3xl font-bold text-white flex items-center gap-3">
+                            Ếch Tập Sự
+                            <span id="profile-streak" class="text-sm font-bold bg-orange-500/20 text-orange-400 px-3 py-1 rounded-full flex items-center gap-1">
+                                🔥 0 Ngày
+                            </span>
+                        </h1>
+                        <p class="text-gray-300 text-sm mt-1">Kiên trì tu luyện mỗi ngày để đột phá cảnh giới, sớm ngày phi thăng tiên giới!</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 bg-black/40 p-3 rounded-2xl border border-white/5">
+                        <div class="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center text-xl">
+                            🪙
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Linh thạch</p>
+                            <p id="profile-coins" class="text-xl font-bold text-yellow-500">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm font-bold">
+                        <span class="text-primary"><span id="profile-xp-current">0</span> Tu vi</span>
+                        <span class="text-gray-500"><span id="profile-xp-needed">308</span> Tu vi đột phá</span>
+                    </div>
+                    <div class="w-full h-4 bg-gray-900 rounded-full overflow-hidden border border-white/10 relative">
+                        <div id="profile-xp-bar" class="h-full bg-gradient-to-r from-green-600 to-primary w-0 transition-all duration-1000 shadow-[0_0_15px_rgba(34,197,94,0.5)]"></div>
+                        <!-- Sparkle effect on progress bar -->
+                        <div class="absolute top-0 bottom-0 right-0 w-10 bg-gradient-to-r from-transparent to-white/30 transform translate-x-1/2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="bg-gray-100/50 dark:bg-gray-900/40 p-6 md:p-8 rounded-3xl border border-border shadow-xl backdrop-blur-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Quests Column -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Daily Quests -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-2">
+                        <h2 class="text-xl font-bold text-main flex items-center gap-2">
+                            <span>📜</span> Nhật Tu Bảng
+                        </h2>
+                        <div class="flex gap-2">
+                            <span class="text-xs font-bold text-gray-400 bg-black/5 dark:bg-black/40 px-3 py-1 rounded-full border border-border hidden md:block">Reset lúc 00:00</span>
+                        </div>
+                    </div>
+                    
+                    <div id="quests-container" class="space-y-3">
+                        <div class="p-8 text-center text-gray-500">Đang tải nhiệm vụ...</div>
+                    </div>
+                </div>
+
+                <!-- Weekly Quests -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-2">
+                        <h2 class="text-xl font-bold text-main flex items-center gap-2">
+                            <span>🗓️</span> Thí Luyện Bảng
+                        </h2>
+                        <span class="text-xs font-bold text-gray-400 bg-black/5 dark:bg-black/40 px-3 py-1 rounded-full border border-border">Reset sáng Thứ 2</span>
+                    </div>
+                    
+                    <div id="weekly-quests-container" class="space-y-3">
+                        <div class="p-8 text-center text-gray-500">Đang tải nhiệm vụ tuần...</div>
+                    </div>
+                </div>
+
+            </div>
+
+        <!-- Achievements Column -->
+        <div class="space-y-4">
+            <div class="flex items-center justify-between px-2">
+                <h2 class="text-xl font-bold text-main flex items-center gap-2">
+                    <span>🏆</span> Tiên Lộ Ấn
+                </h2>
+                <!-- Removed Xem tất cả -->
+            </div>
+            
+            <div class="bg-card p-6 rounded-2xl border border-border shadow-lg">
+                <div class="grid grid-cols-3 gap-4" id="achievements-grid">
+                    <!-- Achievement Placeholders -->
+                    <div class="flex flex-col items-center gap-2 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" title="Cày 7 ngày liên tiếp (Chưa đạt)">
+                        <div class="w-16 h-16 rounded-full bg-orange-500/20 border-2 border-orange-500 flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(249,115,22,0.3)]">🔥</div>
+                        <span class="text-[10px] font-bold text-center text-main">Bền Bỉ</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" title="Hoàn thành 100 Todo (Chưa đạt)">
+                        <div class="w-16 h-16 rounded-full bg-blue-500/20 border-2 border-blue-500 flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(59,130,246,0.3)]">✅</div>
+                        <span class="text-[10px] font-bold text-center text-main">Kỷ Luật</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" title="Focus 100 giờ (Chưa đạt)">
+                        <div class="w-16 h-16 rounded-full bg-purple-500/20 border-2 border-purple-500 flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(168,85,247,0.3)]">⏱️</div>
+                        <span class="text-[10px] font-bold text-center text-main">Thời Gian</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 rounded-xl bg-black/5 dark:bg-black/20 border border-border text-center">
+                    <p class="text-xs text-dim">Hệ thống thành tựu đang trong quá trình phát triển.</p>
+                </div>
+            </div>
+
+            <!-- Shop Teaser -->
+            <div class="flex items-center px-2 mt-4">
+                <h2 class="text-xl font-bold text-main flex items-center gap-2">
+                    <span>🏪</span> Trân Bảo Các
+                </h2>
+            </div>
+            
+            <div class="bg-card p-6 rounded-2xl border border-border shadow-lg relative overflow-hidden group">
+                <div class="relative z-10 flex flex-col items-center text-center gap-3">
+                    <p class="text-xs text-dim">Sử dụng Linh thạch để đổi pháp bảo, trang phục cho ếch linh vật.</p>
+                    <div class="mt-2 w-full p-4 rounded-xl bg-black/5 dark:bg-black/20 border border-border text-center">
+                        <p class="text-xs text-dim">Trân Bảo Các đang trong quá trình thu thập kỳ trân dị bảo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

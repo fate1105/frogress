@@ -1,0 +1,48 @@
+/* =========================================
+   CUSTOM SLIDER (Ép ẩn hoàn toàn đồ mặc định)
+   ========================================= */
+
+.ytb-range {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    background: transparent !important;
+}
+
+/* Ẩn sạch sẽ cục Thumb mặc định trên Chrome/Edge/Eel */
+.ytb-range::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: 0px !important;
+    height: 0px !important;
+    background: transparent !important;
+    border: none !important;
+    opacity: 0 !important;
+}
+
+/* Ẩn cục Thumb trên Firefox (Phòng hờ) */
+.ytb-range::-moz-range-thumb {
+    width: 0px !important;
+    height: 0px !important;
+    background: transparent !important;
+    border: none !important;
+    opacity: 0 !important;
+}
+
+/* State bài hát đang phát */
+.track-item.playing {
+    background-color: rgba(30, 215, 96, 0.1); /* Sửa lại màu xanh Spotify cho đồng bộ */
+    border-left: 3px solid #1ed760;
+}
+.track-item.playing .track-name {
+    color: #1ed760;
+    font-weight: bold;
+}
+
+/* Fix vị trí Player */
+.global-player {
+    left: 260px;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#sidebar.collapsed ~ .content .global-player {
+    left: 72px; 
+}

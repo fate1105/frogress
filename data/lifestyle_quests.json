@@ -1,0 +1,57 @@
+[
+    {
+        "id": "life_water",
+        "title": "Uống đủ nước",
+        "reward": 5
+    },
+    {
+        "id": "life_family",
+        "title": "Gọi điện cho người thân",
+        "reward": 10
+    },
+    {
+        "id": "life_exercise",
+        "title": "Tập thể dục",
+        "reward": 10
+    },
+    {
+        "id": "life_read",
+        "title": "Đọc sách",
+        "reward": 10
+    },
+    {
+        "id": "life_sleep",
+        "title": "Đi ngủ trước 23h",
+        "reward": 15
+    },
+    {
+        "id": "life_meditate",
+        "title": "Thiền tĩnh tâm 5 phút",
+        "reward": 5
+    },
+    {
+        "id": "life_clean",
+        "title": "Dọn dẹp bàn học",
+        "reward": 10
+    },
+    {
+        "id": "life_plan",
+        "title": "Lập kế hoạch ngày mai",
+        "reward": 5
+    },
+    {
+        "id": "life_write",
+        "title": "Viết nhật ký hôm nay",
+        "reward": 10
+    },
+    {
+        "id": "life_digital_detox",
+        "title": "Dành 10 phút tĩnh lặng không điện thoại",
+        "reward": 5
+    },
+    {
+        "id": "life_note",
+        "title": "Ghi chú một điều mới học được",
+        "reward": 5
+    }
+]
