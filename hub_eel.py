@@ -1278,6 +1278,156 @@ def open_update_url(url):
             return {"status": "error", "msg": str(e)}
     return {"status": "error", "msg": "No URL specified"}
 
+@eel.expose
+def start_auto_update():
+    """Bắt đầu tiến trình tự động tải về và giải nén bản cập nhật mới"""
+    import threading
+    
+    # 1. Kiểm tra môi trường
+    if not getattr(sys, 'frozen', False):
+        return {"status": "dev_mode", "msg": "Đang chạy ở môi trường DEV - Vui lòng dùng git pull để cập nhật hoặc mở trình duyệt tải file."}
+        
+    def run_update_thread():
+        try:
+            # 2. Tìm direct ZIP download link qua API của GitHub
+            import urllib.request
+            import json
+            import zipfile
+            import subprocess
+            
+            eel.update_download_progress(5, "Đang kết nối tới kho lưu trữ Chân Tiên...")()
+            
+            api_url = "https://api.github.com/repos/fate1105/frogress/releases/latest"
+            req = urllib.request.Request(
+                api_url, 
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+            )
+            
+            zip_url = None
+            try:
+                with urllib.request.urlopen(req, timeout=5) as response:
+                    res_data = json.loads(response.read().decode('utf-8'))
+                    for asset in res_data.get('assets', []):
+                        if asset.get('name', '').endswith('.zip'):
+                            zip_url = asset.get('browser_download_url')
+                            break
+            except Exception as e:
+                print("Lỗi API:", e)
+                
+            if not zip_url:
+                # Fallback: đọc trực tiếp từ version.json nếu có download_url trực tiếp kết thúc bằng .zip
+                try:
+                    from config import UPDATE_URL
+                    req2 = urllib.request.Request(UPDATE_URL, headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(req2, timeout=5) as r2:
+                        d2 = json.loads(r2.read().decode('utf-8'))
+                        d_url = d2.get("download_url", "")
+                        if d_url.endswith(".zip"):
+                            zip_url = d_url
+                except Exception as ex:
+                    print("Lỗi đọc Fallback URL:", ex)
+                    
+            if not zip_url:
+                # Nếu vẫn không tìm được ZIP link, thông báo mở trình duyệt tải tay
+                eel.update_download_progress(-2, "Không tìm thấy file đóng gói ZIP trực tiếp trên GitHub. Vui lòng nâng cấp thủ công!")()
+                return
+                
+            eel.update_download_progress(10, "Bắt đầu tải bản đột phá mới...")()
+            
+            # 3. Tải file ZIP về thư mục tạm
+            temp_dir = os.environ.get('TEMP', os.getcwd())
+            zip_path = os.path.join(temp_dir, "frogress_update.zip")
+            
+            req_dl = urllib.request.Request(
+                zip_url, 
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+            )
+            
+            with urllib.request.urlopen(req_dl, timeout=15) as dl_response:
+                total_size = int(dl_response.headers.get('content-length', 0))
+                downloaded = 0
+                block_size = 1024 * 16 # 16KB blocks
+                
+                with open(zip_path, 'wb') as f:
+                    while True:
+                        block = dl_response.read(block_size)
+                        if not block:
+                            break
+                        f.write(block)
+                        downloaded += len(block)
+                        
+                        if total_size > 0:
+                            pct = 10 + int(downloaded * 80 / total_size) # Chừa 10% cuối cho giải nén
+                            if pct > 90: pct = 90
+                            pct_text = f"Đang tải... {pct}% ({downloaded//1024}KB / {total_size//1024}KB)"
+                            eel.update_download_progress(pct, pct_text)()
+                            
+            eel.update_download_progress(92, "Tải về hoàn tất! Đang phân tích gói tài nguyên...")()
+            
+            # 4. Phân tích tên thư mục bên trong ZIP để tránh sai lệch đường dẫn
+            extracted_folder_name = None
+            try:
+                with zipfile.ZipFile(zip_path, 'r') as z:
+                    for name in z.namelist():
+                        parts = name.split('/')
+                        if len(parts) > 0 and parts[0].startswith('Frogress'):
+                            extracted_folder_name = parts[0]
+                            break
+            except Exception as e:
+                print("Lỗi đọc file ZIP:", e)
+                
+            if not extracted_folder_name:
+                extracted_folder_name = "Frogress" # fallback
+                
+            eel.update_download_progress(95, "Đang tạo trình đột phá độc lập dưới nền...")()
+            
+            # 5. Khởi tạo đường dẫn
+            current_exe_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+            grandparent_dir = os.path.dirname(current_exe_dir)
+            new_exe_path = os.path.join(grandparent_dir, extracted_folder_name, "Frogress.exe")
+            
+            bat_path = os.path.join(temp_dir, "frogress_updater.bat")
+            
+            # 6. Viết script bat tự động thay thế và khởi chạy
+            bat_content = f"""@echo off
+chcp 65001 > nul
+title Trình đột phá phiên bản Frogress
+echo Đang chờ Frogress cũ tắt hẳn...
+timeout /t 2 /nobreak > nul
+
+echo Đang đột phá phiên bản... Giải nén tệp tin mới vào "{grandparent_dir}"...
+tar -xf "{zip_path}" -C "{grandparent_dir}"
+
+echo Đột phá thành công! Đang khởi động lại ứng dụng mới...
+start "" "{new_exe_path}"
+
+:: Dọn dẹp tệp tạm
+del "{zip_path}"
+del "%~f0"
+"""
+            with open(bat_path, 'w', encoding='utf-8') as f:
+                f.write(bat_content)
+                
+            eel.update_download_progress(100, "Đột phá thành công! Đang tự động khởi động lại bản mới...")()
+            eel.sleep(1.0)
+            
+            # 7. Chạy file bat ẩn cửa sổ dưới nền và tắt ứng dụng hiện tại
+            subprocess.Popen(
+                [bat_path], 
+                shell=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            cleanup_and_exit()
+            
+        except Exception as e:
+            import traceback
+            err_msg = "".join(traceback.format_exception_only(type(e), e)).strip()
+            eel.update_download_progress(-1, f"Lỗi đột phá: {err_msg}")()
+
+    # Chạy luồng phụ để không treo UI
+    threading.Thread(target=run_update_thread, daemon=True).start()
+    return {"status": "started"}
+
 if __name__ == "__main__":
     # Khởi chạy System Tray
     setup_tray()

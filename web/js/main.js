@@ -219,8 +219,7 @@ function checkAppUpdates() {
                     
                     if (downloadBtn) {
                         downloadBtn.onclick = () => {
-                            eel.open_update_url(res.download_url)();
-                            closeUpdateModal();
+                            startAutoUpdate();
                         };
                     }
                     
@@ -235,5 +234,62 @@ function checkAppUpdates() {
 
 function closeUpdateModal() {
     const modal = document.getElementById('update-modal');
-    if (modal) modal.classList.add('hidden');
+    if (modal) {
+        modal.classList.add('hidden');
+        // Reset lại trạng thái progress nếu tắt
+        const progressContainer = document.getElementById('update-progress-container');
+        const buttonsContainer = document.getElementById('update-buttons-container');
+        if (progressContainer) progressContainer.classList.add('hidden');
+        if (buttonsContainer) buttonsContainer.classList.remove('hidden');
+    }
+}
+
+function startAutoUpdate() {
+    const progressContainer = document.getElementById('update-progress-container');
+    const buttonsContainer = document.getElementById('update-buttons-container');
+    if (progressContainer) progressContainer.classList.remove('hidden');
+    if (buttonsContainer) buttonsContainer.classList.add('hidden');
+    
+    eel.start_auto_update()().then(res => {
+        if (res && res.status === "dev_mode") {
+            // Môi trường DEV: tự động nhảy sang browser tải
+            update_download_progress(-2, "Môi trường DEV - Sẽ tự mở trình duyệt...");
+            setTimeout(() => {
+                eel.open_update_url("https://github.com/fate1105/frogress/releases/latest")();
+                closeUpdateModal();
+            }, 2000);
+        }
+    }).catch(err => {
+        update_download_progress(-1, `Không kết nối được Backend: ${err}`);
+    });
+}
+
+// Expose callback để Python gọi cập nhật tiến trình
+eel.expose(update_download_progress);
+function update_download_progress(percentage, statusText) {
+    const progressContainer = document.getElementById('update-progress-container');
+    const buttonsContainer = document.getElementById('update-buttons-container');
+    const progressBar = document.getElementById('update-progress-bar');
+    const progressPercent = document.getElementById('update-progress-percent');
+    const progressLabel = document.getElementById('update-progress-label');
+    const progressInfo = document.getElementById('update-progress-info');
+    
+    if (progressContainer) progressContainer.classList.remove('hidden');
+    if (buttonsContainer) buttonsContainer.classList.add('hidden');
+    
+    if (percentage === -1) {
+        if (progressLabel) progressLabel.innerHTML = `<span class="text-red-500 dark:text-red-400 font-bold">❌ ${statusText}</span>`;
+        if (progressInfo) progressInfo.innerText = "Đột phá thất bại. Hãy đóng popup và thử lại hoặc tải thủ công trên GitHub.";
+        if (buttonsContainer) buttonsContainer.classList.remove('hidden');
+    } else if (percentage === -2) {
+        if (progressLabel) progressLabel.innerHTML = `<span class="text-amber-600 dark:text-amber-400 font-bold">⚠️ ${statusText}</span>`;
+        if (progressInfo) progressInfo.innerText = "Vui lòng đợi giây lát...";
+    } else {
+        if (progressBar) progressBar.style.width = `${percentage}%`;
+        if (progressPercent) progressPercent.innerText = `${percentage}%`;
+        if (progressLabel) progressLabel.innerText = statusText || "Đang tải bản đột phá...";
+        if (percentage === 100) {
+            if (progressInfo) progressInfo.innerText = "Đang khởi động lại ứng dụng mới...";
+        }
+    }
 }
