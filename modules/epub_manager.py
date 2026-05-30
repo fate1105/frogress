@@ -113,7 +113,7 @@ class EpubManager:
         except Exception as e:
             return {"status": "error", "msg": str(e)}
 
-    def save_reading_progress(self, filename, cfi, read_chapters=None):
+    def save_reading_progress(self, filename, cfi, read_chapters=None, part_index=None):
         try:
             metadata = self.get_epub_list()
             updated = False
@@ -125,6 +125,8 @@ class EpubManager:
                         current_read = set(item.get("read_chapters", []))
                         current_read.update(read_chapters)
                         item["read_chapters"] = list(current_read)
+                    if part_index is not None:
+                        item["part_index"] = part_index
                     updated = True
                     break
             
@@ -144,7 +146,8 @@ class EpubManager:
                     return {
                         "status": "success", 
                         "cfi": item.get("last_cfi"),
-                        "read_chapters": item.get("read_chapters", [])
+                        "read_chapters": item.get("read_chapters", []),
+                        "part_index": item.get("part_index")
                     }
             return {"status": "error", "msg": "Progress not found"}
         except Exception as e:

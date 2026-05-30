@@ -854,8 +854,8 @@ def update_epub_series(filename, parts):
     return epub_manager.update_series_parts(filename, parts)
 
 @eel.expose
-def save_epub_progress(filename, cfi, read_chapters=None):
-    return epub_manager.save_reading_progress(filename, cfi, read_chapters)
+def save_epub_progress(filename, cfi, read_chapters=None, part_index=None):
+    return epub_manager.save_reading_progress(filename, cfi, read_chapters, part_index)
 
 @eel.expose
 def get_epub_progress(filename):

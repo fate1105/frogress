@@ -129,23 +129,74 @@ function renderSeriesModalParts() {
 
     modalSeriesParts.forEach((part, index) => {
         const item = document.createElement('div');
-        item.className = 'flex items-center justify-between p-3 bg-gray-800/50 border border-border rounded-xl group';
+        item.className = 'flex items-center justify-between p-3 bg-gray-800/50 hover:bg-primary/10 border border-border hover:border-primary/50 rounded-xl group cursor-pointer transition-all';
+        
+        // Nhấp vào vùng chính của dòng để đọc nhanh tập này
+        item.onclick = (e) => {
+            if (e.target.closest('.action-btn')) return;
+            readPart(index);
+        };
+
         item.innerHTML = `
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 select-none">
                 <span class="text-xs font-bold text-primary w-6">#${index + 1}</span>
-                <span class="text-sm text-title truncate max-w-[200px]">${part}</span>
+                <div class="flex flex-col">
+                    <span class="text-sm text-title truncate max-w-[220px] font-medium group-hover:text-primary transition-all">${part.replace('.epub', '')}</span>
+                    <span class="text-[10px] text-dim group-hover:text-primary/70 transition-all">Nhấp hoặc đúp chuột để đọc tập này</span>
+                </div>
             </div>
-            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onclick="movePart(${index}, -1)" class="p-1.5 hover:bg-gray-700 rounded-lg" ${index === 0 ? 'disabled' : ''}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            <div class="flex items-center gap-2">
+                <button onclick="event.stopPropagation(); readPart(${index})" class="action-btn flex items-center gap-1 px-2.5 py-1 text-xs bg-primary/20 hover:bg-primary text-primary hover:text-white rounded-lg border border-primary/30 transition-all font-semibold opacity-80 group-hover:opacity-100">
+                    📖 Đọc ngay
                 </button>
-                <button onclick="movePart(${index}, 1)" class="p-1.5 hover:bg-gray-700 rounded-lg" ${index === modalSeriesParts.length - 1 ? 'disabled' : ''}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
+                <div class="flex gap-0.5 border-l border-border pl-2 action-btn">
+                    <button onclick="event.stopPropagation(); movePart(${index}, -1)" class="p-1.5 hover:bg-gray-700 rounded-lg text-dim hover:text-white" ${index === 0 ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                    </button>
+                    <button onclick="event.stopPropagation(); movePart(${index}, 1)" class="p-1.5 hover:bg-gray-700 rounded-lg text-dim hover:text-white" ${index === modalSeriesParts.length - 1 ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                </div>
             </div>
         `;
         list.appendChild(item);
     });
+}
+
+async function readPart(index) {
+    if (!currentSeries) return;
+    if (index < 0 || index >= currentSeries.parts.length) return;
+
+    currentPartIndex = index;
+    closeSeriesModal();
+
+    // Reset progress reading chapters to match the series
+    try {
+        const progress = await eel.get_epub_progress(currentSeries.filename)();
+        if (progress.status === "success") {
+            currentReadChapters = new Set(progress.read_chapters || []);
+        } else {
+            currentReadChapters = new Set();
+        }
+    } catch (err) {
+        console.error("Error loading series progress:", err);
+        currentReadChapters = new Set();
+    }
+
+    // Clear reader screen and show loading
+    const loading = document.getElementById('reader-loading');
+    if (loading) loading.classList.remove('hidden');
+
+    try {
+        // Load the chosen part starting from the beginning
+        await loadBookPart(currentSeries.parts[currentPartIndex]);
+        // Save progress with the updated part_index and cfi as null
+        eel.save_epub_progress(currentSeries.filename, null, Array.from(currentReadChapters), currentPartIndex)();
+    } catch (err) {
+        console.error("Error loading selected part:", err);
+        if (loading) loading.classList.add('hidden');
+        showNotification("Lỗi khi tải tập truyện: " + err.message, "error");
+    }
 }
 
 function movePart(index, dir) {
@@ -165,6 +216,9 @@ function closeSeriesModal() {
 async function saveSeriesOrder() {
     try {
         await eel.update_epub_series(currentSeries.filename, modalSeriesParts)();
+        if (currentSeries) {
+            currentSeries.parts = [...modalSeriesParts];
+        }
         closeSeriesModal();
         openEpubReader(currentSeries.filename, true);
     } catch (err) {
@@ -386,8 +440,11 @@ async function openEpubReader(filename, isSeries = false) {
             if (!currentSeries || !currentSeries.parts || currentSeries.parts.length === 0) {
                 throw new Error("Không tìm thấy dữ liệu tập truyện trong bộ này.");
             }
-            currentPartIndex = 0;
-            await loadBookPart(currentSeries.parts[0], startCfi);
+            currentPartIndex = (progress && typeof progress.part_index === 'number') ? progress.part_index : 0;
+            if (currentPartIndex < 0 || currentPartIndex >= currentSeries.parts.length) {
+                currentPartIndex = 0;
+            }
+            await loadBookPart(currentSeries.parts[currentPartIndex], startCfi);
         } else {
             currentSeries = null;
             await loadBookPart(filename, startCfi);
@@ -478,6 +535,71 @@ async function loadBookPart(filename, initialCfi = null) {
         if (!tocList) return;
         tocList.innerHTML = '';
 
+        if (currentSeries) {
+            let isCollapsed = localStorage.getItem('series_parts_collapsed') === 'true';
+
+            // Add a beautiful section header for Series Parts
+            const seriesHeader = document.createElement('div');
+            seriesHeader.className = 'px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary border-b border-border mb-2 mt-1 flex items-center justify-between cursor-pointer hover:bg-primary/5 rounded-lg transition-all select-none';
+            seriesHeader.innerHTML = `
+                <div class="flex items-center gap-1.5">
+                    <span class="arrow-icon transition-transform duration-200 inline-block text-[10px]" style="transform: ${isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'}">▼</span>
+                    <span>📦 Danh sách tập</span>
+                </div>
+                <span class="px-1.5 py-0.5 bg-primary/20 text-primary rounded text-[9px] font-normal">${currentPartIndex + 1}/${currentSeries.parts.length}</span>
+            `;
+
+            // Container for the part items so we can collapse/expand it easily
+            const partsContainer = document.createElement('div');
+            partsContainer.className = `transition-all duration-200 overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0 mt-0' : 'max-h-[500px] opacity-100 mt-2'}`;
+
+            // Add each part as a clickable item
+            currentSeries.parts.forEach((partName, idx) => {
+                const partItem = document.createElement('div');
+                const isCurrent = idx === currentPartIndex;
+                partItem.className = `toc-item-part px-3 py-2.5 text-sm rounded-xl cursor-pointer transition-all truncate flex items-center justify-between mb-1.5 ${
+                    isCurrent 
+                        ? 'text-white bg-primary font-bold shadow-md shadow-primary/20' 
+                        : 'text-dim hover:text-white hover:bg-primary/10 hover:translate-x-1'
+                }`;
+                partItem.innerHTML = `
+                    <span class="truncate pr-2">${idx + 1}. ${partName.replace('.epub', '')}</span>
+                    ${isCurrent ? '<span class="text-[9px] px-1.5 py-0.5 bg-white/20 text-white rounded font-medium shrink-0 animate-[pulse_1.5s_infinite]">Đang đọc</span>' : ''}
+                `;
+                partItem.onclick = () => {
+                    if (isCurrent) return;
+                    readPart(idx);
+                };
+                partsContainer.appendChild(partItem);
+            });
+
+            // Toggle logic on click
+            seriesHeader.onclick = () => {
+                isCollapsed = !isCollapsed;
+                localStorage.setItem('series_parts_collapsed', isCollapsed);
+                
+                const arrow = seriesHeader.querySelector('.arrow-icon');
+                if (isCollapsed) {
+                    arrow.style.transform = 'rotate(-90deg)';
+                    partsContainer.classList.remove('max-h-[500px]', 'opacity-100', 'mt-2');
+                    partsContainer.classList.add('max-h-0', 'opacity-0', 'mt-0');
+                } else {
+                    arrow.style.transform = 'rotate(0deg)';
+                    partsContainer.classList.remove('max-h-0', 'opacity-0', 'mt-0');
+                    partsContainer.classList.add('max-h-[500px]', 'opacity-100', 'mt-2');
+                }
+            };
+
+            tocList.appendChild(seriesHeader);
+            tocList.appendChild(partsContainer);
+
+            // Add a divider before the chapter list
+            const chapterHeader = document.createElement('div');
+            chapterHeader.className = 'px-3 py-2 text-xs font-bold uppercase tracking-wider text-dim border-b border-border my-3 flex items-center';
+            chapterHeader.innerHTML = '📖 Mục lục chi tiết';
+            tocList.appendChild(chapterHeader);
+        }
+
         // Flatten navigation if it has nested items
         const flatNav = [];
         const processItems = (items) => {
@@ -557,7 +679,7 @@ function syncToc(nav, cfi = null) {
             // Mark as read
             if (!currentReadChapters.has(chapter.href)) {
                 currentReadChapters.add(chapter.href);
-                eel.save_epub_progress(currentFilename, cfi || rendition.currentLocation().start.cfi, Array.from(currentReadChapters))();
+                eel.save_epub_progress(currentFilename, cfi || rendition.currentLocation().start.cfi, Array.from(currentReadChapters), currentSeries ? currentPartIndex : null)();
 
                 tocItem.classList.add('text-green-500/60');
                 const checkSpan = tocItem.querySelector('.check-icon');
@@ -565,7 +687,7 @@ function syncToc(nav, cfi = null) {
                     checkSpan.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
                 }
             } else if (cfi) {
-                eel.save_epub_progress(currentFilename, cfi)();
+                eel.save_epub_progress(currentFilename, cfi, Array.from(currentReadChapters), currentSeries ? currentPartIndex : null)();
             }
         }
     }
@@ -574,28 +696,25 @@ function syncToc(nav, cfi = null) {
 async function handleNav(dir) {
     if (!rendition) return;
 
+    const loc = rendition.currentLocation();
     if (dir === 'next') {
-        const status = await rendition.next();
-        // If we reached the end of current book and it's a series
-        if (currentSeries && currentPartIndex < currentSeries.parts.length - 1) {
-            // Check if we are really at the end
-            const loc = rendition.currentLocation();
-            if (loc && loc.atEnd) {
-                currentPartIndex++;
-                showNotification(`Đang chuyển sang Tập ${currentPartIndex + 1}...`, "info");
-                await loadBookPart(currentSeries.parts[currentPartIndex]);
-            }
+        if (currentSeries && loc && loc.atEnd && currentPartIndex < currentSeries.parts.length - 1) {
+            currentPartIndex++;
+            showNotification(`Đang chuyển sang Tập ${currentPartIndex + 1}...`, "info");
+            await loadBookPart(currentSeries.parts[currentPartIndex]);
+            eel.save_epub_progress(currentFilename, null, Array.from(currentReadChapters), currentPartIndex)();
+            return;
         }
+        await rendition.next();
     } else {
-        await rendition.prev();
-        if (currentSeries && currentPartIndex > 0) {
-            const loc = rendition.currentLocation();
-            if (loc && loc.atStart) {
-                currentPartIndex--;
-                showNotification(`Quay lại Tập ${currentPartIndex + 1}...`, "info");
-                await loadBookPart(currentSeries.parts[currentPartIndex], "end");
-            }
+        if (currentSeries && loc && loc.atStart && currentPartIndex > 0) {
+            currentPartIndex--;
+            showNotification(`Quay lại Tập ${currentPartIndex + 1}...`, "info");
+            await loadBookPart(currentSeries.parts[currentPartIndex], "end");
+            eel.save_epub_progress(currentFilename, "end", Array.from(currentReadChapters), currentPartIndex)();
+            return;
         }
+        await rendition.prev();
     }
 }
 
