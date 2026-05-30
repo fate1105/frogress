@@ -119,14 +119,75 @@ def get_file_metadata(filename):
     return metadata
 
 def get_downloaded_files():
-    """Trả về danh sách file mp3 kèm metadata để hiển thị lên Hub"""
+    """Trả về danh sách file mp3 kèm metadata để hiển thị lên Hub (Có áp dụng cache)"""
     if not os.path.exists(DOWNLOADS_DIR):
         return []
     
     mp3_files = [f for f in os.listdir(DOWNLOADS_DIR) if f.endswith('.mp3')]
     
-    # Sử dụng ThreadPool để xử lý metadata nhanh hơn cho danh sách dài
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        results = list(executor.map(get_file_metadata, mp3_files))
+    # Đường dẫn file cache
+    cache_file = os.path.join(DOWNLOADS_DIR, "metadata_cache.json")
+    cache_data = {}
     
+    # 1. Đọc cache cũ
+    if os.path.exists(cache_file):
+        try:
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                cache_data = json.load(f)
+        except:
+            cache_data = {}
+            
+    results = []
+    need_save_cache = False
+    files_to_scan = []
+    
+    # 2. Phân loại file: dùng cache hay cần scan mới
+    for f in mp3_files:
+        file_path = os.path.join(DOWNLOADS_DIR, f)
+        try:
+            mtime = os.path.getmtime(file_path)
+            size = os.path.getsize(file_path)
+        except:
+            mtime = 0
+            size = 0
+            
+        cached_item = cache_data.get(f)
+        # Nếu đã có trong cache và không bị chỉnh sửa (khớp mtime và size)
+        if cached_item and cached_item.get('mtime') == mtime and cached_item.get('size') == size:
+            results.append(cached_item['metadata'])
+        else:
+            files_to_scan.append((f, mtime, size))
+            
+    # 3. Quét các file mới/bị đổi bằng ThreadPool
+    if files_to_scan:
+        need_save_cache = True
+        just_filenames = [item[0] for item in files_to_scan]
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            scanned_metadata = list(executor.map(get_file_metadata, just_filenames))
+            
+        for (f, mtime, size), meta in zip(files_to_scan, scanned_metadata):
+            # Lưu vào cache data
+            cache_data[f] = {
+                'mtime': mtime,
+                'size': size,
+                'metadata': meta
+            }
+            results.append(meta)
+            
+    # 4. Dọn dẹp cache: xóa bỏ các file không còn tồn tại trong thư mục tải về
+    cached_filenames = list(cache_data.keys())
+    for f in cached_filenames:
+        if f not in mp3_files and f != "metadata_cache.json":
+            cache_data.pop(f, None)
+            need_save_cache = True
+            
+    # 5. Lưu lại cache mới
+    if need_save_cache:
+        try:
+            with open(cache_file, 'w', encoding='utf-8') as f:
+                json.dump(cache_data, f, ensure_ascii=False, indent=4)
+        except:
+            pass
+            
     return results

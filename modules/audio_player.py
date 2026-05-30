@@ -196,6 +196,24 @@ class AudioPlayerBackend:
             except Exception as e:
                 print("Lỗi Monitor Thread:", e)
 
+    def remove_track(self, filename):
+        """Dừng nhạc, unload và giải phóng file lock đề phòng file vẫn bị giữ bởi pygame"""
+        if self.current_index != -1 and 0 <= self.current_index < len(self.playlist):
+            if self.playlist[self.current_index] == filename:
+                try:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.unload()
+                except Exception as e:
+                    print("Lỗi dừng/unload khi xóa bài đang phát:", e)
+                self.is_playing = False
+                self.is_paused = False
+                self.current_index = -1
+                
+        try:
+            pygame.mixer.music.unload()
+        except:
+            pass
+
     def stop(self):
         try:
             pygame.mixer.music.stop()

@@ -1,0 +1,432 @@
+<div class="h-full flex flex-col space-y-6">
+    <!-- Upload Progress Indicator -->
+    <div id="upload-progress-card"
+        class="hidden fixed bottom-6 right-6 z-[150] w-72 bg-card border border-border rounded-2xl shadow-2xl p-4 animate-slideUp">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                <svg class="animate-bounce" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+            </div>
+            <div class="flex-1 overflow-hidden">
+                <p id="upload-progress-status" class="text-sm font-bold text-title truncate">Đang nạp linh thư...</p>
+                <p id="upload-progress-count" class="text-[10px] text-dim uppercase tracking-widest mt-0.5">0/0 Đã hoàn
+                    tất</p>
+            </div>
+        </div>
+        <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div id="upload-progress-bar" class="h-full bg-primary transition-all duration-300" style="width: 0%"></div>
+        </div>
+    </div>
+    <!-- Header Section -->
+    <div class="bg-card border border-border rounded-2xl p-6 shadow-lg">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-title tracking-tight">Tiên Thư</h1>
+                <p class="text-dim mt-1">Quản lý và đọc tiên thư (EPUB)</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="btn-merge-epubs" onclick="mergeSelectedEpubs()"
+                    class="hidden flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-lg transition-all active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m7 15 5 5 5-5" />
+                        <path d="m7 9 5-5 5 5" />
+                    </svg>
+                    <span class="font-semibold">Gộp linh thư</span>
+                </button>
+                <input type="file" id="epub-upload-input" accept=".epub" class="hidden"
+                    onchange="handleEpubUpload(event)" multiple>
+                <button onclick="document.getElementById('epub-upload-input').click()"
+                    class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-blue-600 text-white rounded-xl shadow-lg transition-all active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span class="font-semibold">Tải lên Thiên Thư</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="epub-main-view" class="flex-1 overflow-hidden flex flex-col">
+        <!-- List View -->
+        <div id="epub-list-view"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pr-2 pb-8">
+            <!-- Books will be loaded here -->
+            <div id="epub-empty-state"
+                class="col-span-full py-20 flex flex-col items-center justify-center text-dim bg-card/30 rounded-3xl border-2 border-dashed border-border">
+                <span class="text-6xl mb-4">📚</span>
+                <p class="text-lg font-medium">Chưa có linh thư nào trong tàng kinh các</p>
+                <p class="text-sm">Hãy tải lên một file EPUB để bắt đầu tu luyện</p>
+            </div>
+        </div>
+
+        <!-- Reader View (Hidden by default) -->
+        <div id="epub-reader-view"
+            class="hidden fixed inset-0 z-[100] bg-dark flex flex-col overflow-x-hidden animate-[fadeIn_0.3s]">
+            <!-- Reader Header -->
+            <div id="reader-header" class="p-4 border-b border-border bg-card flex items-center justify-between z-30">
+                <div class="flex items-center gap-4">
+                    <button id="reader-close-btn" onclick="closeEpubReader()"
+                        class="p-2 hover:bg-gray-800 rounded-lg text-dim hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12" />
+                            <polyline points="12 19 5 12 12 5" />
+                        </svg>
+                    </button>
+                    <button id="show-toc-btn" onclick="toggleToc()"
+                        class="p-2 hover:bg-gray-800 rounded-lg text-dim hover:text-white transition-all"
+                        title="Hiện mục lục">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
+                    <h2 id="reader-book-title" class="font-bold text-title truncate max-w-[200px] md:max-w-md">Tiên Thư
+                    </h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="reader-settings-btn" onclick="toggleReaderSettings()"
+                        class="p-2 hover:bg-gray-800 rounded-lg text-dim hover:text-white transition-all"
+                        title="Cài đặt">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reader Settings Overlay -->
+            <div id="reader-settings"
+                class="hidden absolute top-16 right-4 z-[110] w-80 bg-card/95 backdrop-blur-md border border-border rounded-2xl shadow-2xl p-4 max-h-[80vh] overflow-y-auto custom-scrollbar animate-[fadeIn_0.2s]">
+                <h3 class="font-bold text-title mb-4 flex items-center gap-2 border-b border-border/50 pb-2">
+                    <span>⚙️</span> Cài đặt hiển thị
+                </h3>
+
+                <div class="space-y-4">
+
+
+                    <!-- Font Size -->
+                    <div>
+                        <label class="text-xs font-bold text-dim uppercase tracking-wider block mb-2">Kích cỡ chữ</label>
+                        <div class="flex items-center gap-3">
+                            <button onclick="changeFontSize(-5)"
+                                class="flex-1 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-bold transition-all active:scale-95">A-</button>
+                            <span id="font-size-label" class="text-sm font-medium w-12 text-center">100%</span>
+                            <button onclick="changeFontSize(5)"
+                                class="flex-1 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-bold transition-all active:scale-95">A+</button>
+                        </div>
+                    </div>
+
+                    <!-- Themes -->
+                    <div>
+                        <label class="text-xs font-bold text-dim uppercase tracking-wider block mb-2">Màu nền tiên cảnh</label>
+                        <div class="grid grid-cols-5 gap-2">
+                            <button onclick="setReaderTheme('light')"
+                                class="w-10 h-10 rounded-full border-2 border-transparent bg-[#fdfdfd] hover:scale-105 transition-all shadow-sm"
+                                id="theme-btn-light" title="Bạch Ngọc (Sáng)"></button>
+                            <button onclick="setReaderTheme('sepia')"
+                                class="w-10 h-10 rounded-full border-2 border-transparent bg-[#f4ecd8] hover:scale-105 transition-all shadow-sm"
+                                id="theme-btn-sepia" title="Kinh Thư (Vàng nhạt)"></button>
+                            <button onclick="setReaderTheme('solarized')"
+                                class="w-10 h-10 rounded-full border-2 border-transparent bg-[#eee8d5] hover:scale-105 transition-all shadow-sm"
+                                id="theme-btn-solarized" title="Đoạn Thảo (Vàng xanh)"></button>
+                            <button onclick="setReaderTheme('dark')"
+                                class="w-10 h-10 rounded-full border-2 border-transparent bg-[#1a1a1a] hover:scale-105 transition-all shadow-sm"
+                                id="theme-btn-dark" title="Huyền Mặc (Xám đậm)"></button>
+                            <button onclick="setReaderTheme('night')"
+                                class="w-10 h-10 rounded-full border-2 border-transparent bg-[#0d0d0d] hover:scale-105 transition-all shadow-sm"
+                                id="theme-btn-night" title="Cửu U (Đen sâu)"></button>
+                        </div>
+                    </div>
+
+                    <!-- Fonts -->
+                    <div>
+                        <label class="text-xs font-bold text-dim uppercase tracking-wider block mb-2">Phông chữ chuẩn hóa</label>
+                        <select id="font-family-select" onchange="setReaderFont(this.value)"
+                            class="w-full bg-gray-800 border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary text-title transition-all">
+                            <option value="'Literata', serif">Literata (Khuyên dùng)</option>
+                            <option value="'Be Vietnam Pro', sans-serif">Be Vietnam Pro (Chuẩn TV)</option>
+                            <option value="'Inter', sans-serif">Inter (Không chân)</option>
+                            <option value="'Playfair Display', serif">Playfair (Cổ điển)</option>
+                            <option value="'Georgia', serif">Georgia (Mượt mà)</option>
+                            <option value="'Segoe UI', sans-serif">Hệ thống</option>
+                        </select>
+                    </div>
+
+                    <!-- Line Height -->
+                    <div>
+                        <label class="text-xs font-bold text-dim uppercase tracking-wider block mb-2">Khoảng cách dòng</label>
+                        <div class="flex bg-gray-900/60 p-1 rounded-xl gap-1">
+                            <button id="lh-1.4-btn" onclick="changeLineHeight('1.4')"
+                                class="flex-1 py-1 text-[10px] font-bold rounded-lg transition-all">1.4</button>
+                            <button id="lh-1.6-btn" onclick="changeLineHeight('1.6')"
+                                class="flex-1 py-1 text-[10px] font-bold rounded-lg transition-all">1.6</button>
+                            <button id="lh-1.8-btn" onclick="changeLineHeight('1.8')"
+                                class="flex-1 py-1 text-[10px] font-bold rounded-lg transition-all">1.8</button>
+                            <button id="lh-2.0-btn" onclick="changeLineHeight('2.0')"
+                                class="flex-1 py-1 text-[10px] font-bold rounded-lg transition-all">2.0</button>
+                        </div>
+                    </div>
+
+                    <!-- Margins / Padding -->
+                    <div>
+                        <label class="text-xs font-bold text-dim uppercase tracking-wider block mb-2">Biên lề trang sách</label>
+                        <div class="flex bg-gray-900/60 p-1 rounded-xl gap-1">
+                            <button id="margin-narrow-btn" onclick="changeMargin('narrow')"
+                                class="flex-1 py-1 text-[10px] font-bold rounded-lg transition-all">Hẹp</button>
+                            <button id="margin-medium-btn" onclick="changeMargin('medium')"
+                                class="flex-1 py-1 text-[10px] font-bold rounded-lg transition-all">Vừa</button>
+                            <button id="margin-wide-btn" onclick="changeMargin('wide')"
+                                class="flex-1 py-1 text-[10px] font-bold rounded-lg transition-all">Rộng</button>
+                        </div>
+                    </div>
+
+                    <!-- Text Alignment -->
+                    <div>
+                        <label class="text-xs font-bold text-dim uppercase tracking-wider block mb-2">Kiểu căn lề</label>
+                        <div class="flex bg-gray-900/60 p-1 rounded-xl gap-1">
+                            <button id="align-justify-btn" onclick="changeAlign('justify')"
+                                class="flex-1 py-1 text-xs font-bold rounded-lg transition-all">Căn đều</button>
+                            <button id="align-left-btn" onclick="changeAlign('left')"
+                                class="flex-1 py-1 text-xs font-bold rounded-lg transition-all">Căn trái</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reader Main Content -->
+            <div class="flex-1 flex overflow-hidden relative">
+                <!-- Table of Contents Sidebar -->
+                <div id="reader-toc"
+                    class="absolute md:relative left-0 top-0 bottom-0 h-full w-72 border-r border-border bg-card overflow-y-auto block transition-all duration-300 flex-shrink-0 z-40">
+                    <div id="reader-toc-header" class="p-4 sticky top-0 bg-card z-50 border-b border-border flex items-center justify-between">
+                        <div class="flex flex-col overflow-hidden">
+                            <h3 class="text-xs font-bold text-dim uppercase tracking-widest">Mục lục linh thư</h3>
+                            <span id="toc-part-title"
+                                class="text-[10px] text-primary font-medium truncate max-w-[180px] mt-0.5">Khởi đầu tu
+                                luyện...</span>
+                        </div>
+
+                    </div>
+                    <div id="toc-list" class="p-2 space-y-1">
+                        <!-- TOC items will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Content Area + Footer Column -->
+                <div id="reader-content-col" class="flex-1 min-w-0 flex flex-col overflow-hidden bg-[#fdfdfd]">
+                    <!-- Epub Content Area -->
+                    <div id="epub-viewer-container" class="flex-1 relative overflow-hidden flex justify-center">
+                        <!-- Loading Overlay -->
+                        <div id="reader-loading"
+                            class="hidden absolute inset-0 z-50 bg-dark/50 backdrop-blur-sm flex items-center justify-center text-dim animate-pulse">
+                            <div class="flex flex-col items-center gap-3">
+                                <div
+                                    class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin">
+                                </div>
+                                <span class="text-sm font-medium">Đang khai mở linh thư...</span>
+                            </div>
+                        </div>
+
+                        <div id="epub-viewer" class="w-full h-full z-10">
+                            <!-- Viewer will be injected here by epub.js -->
+                        </div>
+                    </div>
+
+                    <!-- Reader Footer (Inside right column) -->
+                    <div id="reader-footer" class="p-4 border-t border-border bg-card flex items-center justify-between gap-6 z-20">
+                        <button id="prev-page"
+                            class="flex items-center gap-2 px-4 py-2 hover:bg-gray-800 rounded-xl transition-all active:scale-95 text-dim hover:text-white group"
+                            title="Chương trước">
+                            <svg class="group-hover:-translate-x-1 transition-transform"
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                            <span class="text-sm font-medium">Chương trước</span>
+                        </button>
+
+                        <!-- Visual Progress Bar -->
+                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                            <div id="reader-progress-container"
+                                class="w-full max-w-md h-1.5 bg-gray-800 rounded-full overflow-hidden border border-border/30">
+                                <div id="reader-progress-bar" class="h-full bg-primary transition-all duration-300"
+                                    style="width: 0%"></div>
+                            </div>
+                            <div id="reader-pagination"
+                                class="text-[10px] font-bold text-dim uppercase tracking-widest">
+                                Đang nạp tiến độ...
+                            </div>
+                        </div>
+
+                        <button id="next-page"
+                            class="flex items-center gap-2 px-4 py-2 hover:bg-gray-800 rounded-xl transition-all active:scale-95 text-dim hover:text-white group"
+                            title="Chương sau">
+                            <span class="text-sm font-medium">Chương sau</span>
+                            <svg class="group-hover:translate-x-1 transition-transform"
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Series Details Modal (Hidden by default) -->
+<div id="series-modal"
+    class="hidden fixed inset-0 z-[120] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+        class="bg-card border border-border w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-[fadeIn_0.2s]">
+        <div class="p-6 border-b border-border flex items-center justify-between">
+            <div>
+                <h3 id="series-modal-title" class="text-xl font-bold text-title">Chi tiết bộ truyện</h3>
+                <p class="text-xs text-dim mt-1">Sắp xếp các tập linh thư theo đúng thứ tự tu luyện</p>
+            </div>
+            <button onclick="closeSeriesModal()" class="p-2 hover:bg-gray-800 rounded-lg text-dim">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+        <div id="series-parts-list" class="p-6 space-y-3 max-h-[60vh] overflow-y-auto">
+            <!-- Parts will be listed here -->
+        </div>
+        <div class="p-6 bg-gray-900/30 border-t border-border flex gap-3">
+            <button onclick="saveSeriesOrder()"
+                class="flex-1 py-3 bg-primary hover:bg-blue-600 text-white font-bold rounded-2xl transition-all active:scale-95">
+                Lưu thứ tự & Bắt đầu đọc
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Confirmation Modal -->
+<div id="confirm-modal"
+    class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-dark/60 backdrop-blur-sm animate-[fadeIn_0.2s]">
+    <div class="bg-card border border-border rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-[scaleIn_0.2s]">
+        <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-title mb-2">Xác nhận xóa?</h3>
+            <p id="confirm-modal-msg" class="text-dim text-sm mb-6">Đạo hữu có chắc chắn muốn xóa linh thư này khỏi tàng
+                kinh các?</p>
+            <div class="flex gap-3 w-full">
+                <button onclick="closeConfirmModal(false)"
+                    class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-title font-bold rounded-xl transition-all active:scale-95">Hủy</button>
+                <button id="confirm-modal-yes"
+                    class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg shadow-red-900/20 transition-all active:scale-95">Xóa
+                    ngay</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Prompt Modal -->
+<div id="prompt-modal"
+    class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-dark/60 backdrop-blur-sm animate-[fadeIn_0.2s]">
+    <div class="bg-card border border-border rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-[scaleIn_0.2s]">
+        <div class="flex flex-col">
+            <div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+            </div>
+            <h3 id="prompt-modal-title" class="text-xl font-bold text-title mb-2">Nhập tên bộ truyện</h3>
+            <p id="prompt-modal-msg" class="text-dim text-sm mb-4">Mời đạo hữu đặt tên cho bộ linh thư mới này</p>
+            <input type="text" id="prompt-modal-input"
+                class="w-full bg-gray-800 border border-border rounded-xl px-4 py-3 text-sm text-title focus:outline-none focus:ring-2 focus:ring-primary mb-6"
+                placeholder="Ví dụ: Phàm Nhân Tu Tiên - Trọn bộ">
+            <div class="flex gap-3 w-full">
+                <button onclick="closePromptModal(null)"
+                    class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-title font-bold rounded-xl transition-all active:scale-95">Hủy</button>
+                <button id="prompt-modal-yes"
+                    class="flex-1 py-3 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-95">Xác
+                    nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #epub-reader-view,
+    #epub-reader-view * {
+        max-width: 100%;
+        box-sizing: border-box !important;
+    }
+
+    #epub-reader-view {
+        overflow-x: hidden !important;
+    }
+
+    .flex-1 {
+        min-width: 0;
+        /* Critical for flexbox children to shrink */
+    }
+
+    #epub-viewer-container {
+        background-color: #fdfdfd;
+        /* Default Light Theme */
+        overflow-x: hidden !important;
+        position: relative;
+        width: 100% !important;
+    }
+
+    #epub-viewer {
+        overflow-x: hidden !important;
+        background-color: transparent !important;
+        width: 100% !important;
+    }
+
+    #epub-viewer iframe {
+        border: none !important;
+        margin: 0 auto !important;
+    }
+
+    #epub-viewer-container {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    #epub-viewer-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #epub-viewer-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    #epub-viewer-container::-webkit-scrollbar-thumb {
+        background: #374151;
+        border-radius: 10px;
+    }
+</style>

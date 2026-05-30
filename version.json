@@ -1,5 +1,5 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "download_url": "https://github.com/fate1105/frogress/releases/latest",
-  "changelog": "- Khắc phục triệt để lỗi nháy đen dòng lệnh khi vào Linh Âm Động.\n- Tối giản hóa và nâng cấp kho nhiệm vụ Nhật Tu lên 11 thói quen lành mạnh.\n- Tích hợp tính năng Tự động kiểm tra Đột phá Phiên bản mới!"
+  "changelog": "🚀 ĐỘT PHÁ PHIÊN BẢN v1.3 - CẢNH GIỚI NGOẠI NGỮ CHÂN KINH ⚡\n\n1. 🎓 KIẾN TẠO AI - NGOẠI NGỮ CHÂN KINH (TOEIC):\n- Đột phá tái cấu trúc: Thu gọn thanh tạo từ vựng AI cồng kềnh thành nút bấm 'Kiến tạo AI' mở Modal kính mờ cực kỳ sang trọng và tiện lợi.\n- Phân tách cấu trúc mã nguồn thông minh giúp hệ thống vận hành trơn tru, tăng tốc trải nghiệm tu luyện từ vựng TOEIC.\n\n2. 🛠️ CÁC CẬP NHẬT & TỐI ƯU KHÁC:\n- 📖 Tiên Thư: Ra mắt mô-đun đọc sách điện tử ePub mượt mà, tự động ghi nhớ vị trí và lưu bookmark.\n- 🔊 Linh Âm Động: Trình phát nhạc đĩa xoay CD 3D phản quang cao cấp, tải nhạc siêu tốc (10ms) và cho phép xóa nhạc trực tiếp từ giao diện.\n- ⏱️ Pomodoro & Giao diện: Thiết lập lưới 50/50 đối xứng, căn chỉnh tâm quang học (chữ, nút Play) chống lệch thị giác và tương thích Light Mode sắc nét hoàn hảo."
 }

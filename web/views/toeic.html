@@ -1,183 +1,349 @@
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-card p-6 rounded-2xl border border-border shadow-lg gap-4 mb-6 animate-[fadeIn_0.3s]">
-    <div>
-        <h1 class="text-2xl font-bold text-white flex items-center gap-3">
-            <img src="assets/icons/menu-english.png" class="w-8 h-8 object-contain"> Ngoại Ngữ Chân Kinh
-        </h1>
-        <p class="text-gray-400 text-sm mt-1">
-            <span id="toeic-stats" class="font-bold text-primary">0 bí kíp</span> đang được tu luyện
-        </p>
+<!-- English – Ngoại Ngữ Chân Kinh -->
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Flashcard System */
+    .perspective-1000 { perspective: 1000px; }
+    .preserve-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+    
+    .flip-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-style: preserve-3d;
+    }
+    
+    .flipped .flip-card-inner {
+        transform: rotateY(180deg);
+    }
+</style>
+
+
+<div class="english-module-wrapper min-h-full space-y-6 animate-[fadeIn_0.5s]">
+    <!-- Compact Clean Header Section -->
+    <div class="relative overflow-hidden rounded-3xl bg-card p-4 md:p-5 border border-border shadow-xl">
+
+
+
+
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-dark flex items-center justify-center shrink-0">
+                    <img src="assets/icons/menu-english.png" alt="English Icon" class="w-8 h-8 object-contain">
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-white tracking-tight uppercase">Ngoại Ngữ Chân Kinh</h1>
+                    <p class="text-dim text-[10px] font-bold uppercase tracking-widest">Luyện ngoại ngữ • Đột phá cảnh giới</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-2">
+                 <button onclick="UIManager.showHelpModal()" title="Hướng dẫn tu luyện" class="p-3 bg-dark rounded-xl text-dim hover:text-white transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </button>
+                 <button onclick="UIManager.renderHome()" title="Trang chủ module" class="p-3 bg-dark rounded-xl text-dim hover:text-white transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </button>
+                <button onclick="openAiToeicModal()" title="Kiến tạo AI" class="p-3 bg-primary/20 text-primary border border-primary/30 rounded-xl hover:bg-primary/30 transition-all flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    <span class="text-xs font-bold uppercase tracking-widest hidden md:inline">Kiến tạo AI</span>
+                </button>
+                <button onclick="openToeicModal()" title="Thêm bí kíp mới" class="p-3 bg-dark text-white rounded-xl hover:bg-white/10 transition-all flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span class="text-xs font-bold uppercase tracking-widest hidden md:inline">Thêm thủ công</span>
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center w-full md:w-auto gap-3">
-        <button id="btn-toggle-practice" onclick="togglePracticeMode()" class="w-full sm:w-auto justify-center bg-spotify hover:brightness-110 text-black px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg hover:scale-105 flex items-center gap-2">
-            <span>Luyện tập</span>
-        </button>
-        <label for="import-json-file" class="w-full sm:w-auto justify-center bg-dark hover:bg-gray-800 text-gray-300 border border-border px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg flex items-center gap-2 cursor-pointer">
-            <img src="assets/icons/menu-loader.png" class="w-4 h-4 object-contain">
-            <span>Phục hồi</span>
-            <input type="file" id="import-json-file" accept=".json" class="hidden" onchange="handleFileImport(event)">
-        </label>
+
+    <!-- Help Modal Structure -->
+    <div id="english-help-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-card w-full max-w-2xl max-h-[80vh] overflow-y-auto custom-scrollbar rounded-3xl border border-border shadow-2xl flex flex-col transform scale-95 transition-transform duration-300">
+            <div class="px-8 py-6 border-b border-border/50 flex justify-between items-center">
+
+
+
+
+                <h2 class="font-black text-xl text-white tracking-tight uppercase">Bí Pháp Tu Luyện Chân Kinh</h2>
+                <button onclick="UIManager.hideHelpModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark hover:bg-white/10 text-dim hover:text-white transition-all text-2xl">&times;</button>
+            </div>
+            <div class="p-8 space-y-8 text-main">
+                <!-- 1. Tổng quan -->
+                <section>
+                    <h3 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-sm">1</span>
+                        Tổng quan — Tại sao cần SRS?
+                    </h3>
+                    <div class="bg-dark/40 p-5 rounded-2xl border border-border/50 space-y-4">
+
+
+
+
+                        <p class="text-sm leading-relaxed">Spaced Repetition (Lặp lại Ngắt quãng) là phương pháp học dựa trên một nguyên tắc đơn giản: <span class="text-white font-bold">Ôn lại một thông tin ngay trước khi bạn sắp quên nó.</span></p>
+                        <div class="grid grid-cols-2 gap-4 text-[11px]">
+                            <div class="space-y-2">
+                                <p class="font-bold text-red-400 uppercase tracking-widest">Không dùng SRS</p>
+                                <ul class="space-y-1 text-dim">
+                                    <li>Ngày 1: học 50 từ</li>
+                                    <li>Ngày 2: quên 40 từ</li>
+                                    <li>Ngày 7: quên gần hết</li>
+                                </ul>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="font-bold text-spotify uppercase tracking-widest">Dùng SRS (Bí Pháp)</p>
+                                <ul class="space-y-1 text-dim">
+                                    <li>Ngày 1: học 20 từ</li>
+                                    <li>Ngày 2: ôn (nhớ 18)</li>
+                                    <li>Ngày 30: vẫn nhớ 15+ ✓</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Vòng đời -->
+                <section>
+                    <h3 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-sm">2</span>
+                        Vòng đời của thẻ từ vựng
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-widest text-center">
+                            <div class="flex-1 p-3 bg-dark/60 rounded-xl border border-border/30">Mới (New)</div>
+
+                            <div class="text-dim">→</div>
+                            <div class="flex-1 p-3 bg-primary/20 rounded-xl border border-primary/20">Học (Learning)</div>
+                            <div class="text-dim">→</div>
+                            <div class="flex-1 p-3 bg-spotify/20 rounded-xl border border-spotify/20 text-spotify">Ôn tập (Review)</div>
+
+                        </div>
+                        <p class="text-sm text-dim leading-relaxed">Mỗi thẻ sẽ "tốt nghiệp" từ giai đoạn <span class="text-white">Học</span> sang <span class="text-white">Ôn tập</span> dài hạn khi đạo hữu ghi nhớ tốt. Nếu lỡ quên, thẻ sẽ vào trạng thái <span class="text-red-400">Học lại (Relearning)</span>.</p>
+                    </div>
+                </section>
+
+                <!-- 3. Bốn nút đánh giá -->
+                <section>
+                    <h3 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-sm">3</span>
+                        Bốn nút đánh giá
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
+                            <span class="block font-black text-red-500 text-xs mb-1">LẠI</span>
+                            <span class="text-[9px] text-dim">Không nhớ gì</span>
+                        </div>
+                        <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-center">
+                            <span class="block font-black text-amber-500 text-xs mb-1">KHÓ</span>
+                            <span class="text-[9px] text-dim">Nhớ chật vật</span>
+                        </div>
+                        <div class="p-3 bg-spotify/10 border border-spotify/20 rounded-xl text-center">
+                            <span class="block font-black text-spotify text-xs mb-1">TỐT</span>
+                            <span class="text-[9px] text-dim">Nhớ vừa phải</span>
+                        </div>
+                        <div class="p-3 bg-white/10 border border-white/20 rounded-xl text-center">
+                            <span class="block font-black text-white text-xs mb-1">DỄ</span>
+                            <span class="text-[9px] text-dim">Nhớ tức thì</span>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 4. Ease Factor -->
+                <section>
+                    <h3 class="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-sm">4</span>
+                        Ease Factor (Hệ số dễ)
+                    </h3>
+                    <p class="text-sm text-dim leading-relaxed">Đây là "linh căn" của thẻ. Nếu đạo hữu liên tục bấm <span class="text-red-400">Lại</span>, hệ số này giảm → thẻ xuất hiện thường xuyên hơn. Nếu bấm <span class="text-white">Dễ</span>, hệ số tăng → khoảng cách ôn tập sẽ nhảy vọt (có thể lên tới hàng trăm ngày).</p>
+                </section>
+
+                <div class="bg-primary/10 p-6 rounded-3xl border border-primary/20 text-center">
+                    <p class="text-primary font-black uppercase tracking-widest text-xs mb-2">Lời khuyên tu luyện</p>
+                    <p class="text-white text-sm italic">"Chỉ cần kiên trì ôn tập những thẻ ĐẾN HẠN mỗi ngày, đạo hữu sẽ đạt cảnh giới Xuất Thần Nhập Hóa mà không tốn nhiều công sức."</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Main Module Content Container -->
+    <div id="english-module-container" class="pb-12">
+        <div class="flex items-center justify-center py-20 text-dim">
+            <div class="text-center space-y-4">
+                <div class="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p class="text-xs font-bold uppercase tracking-widest">Đang khởi tạo chân kinh...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Kiến Tạo AI (Premium Version) -->
+<div id="ai-toeic-modal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center p-4 justify-center backdrop-blur-md animate-[fadeIn_0.2s]">
+    <div class="bg-card w-full sm:w-[500px] max-h-[90vh] overflow-y-auto custom-scrollbar rounded-3xl border border-white/10 shadow-2xl flex flex-col transform scale-100 transition-transform">
+        <div class="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+            <div>
+                <h2 class="font-black text-xl text-white tracking-tight uppercase flex items-center gap-2">
+                    <span>✨</span> Kiến Tạo Bằng AI
+                </h2>
+                <p class="text-dim text-[10px] font-bold uppercase tracking-widest mt-1">Đột phá tàng kinh các bằng Gemini AI</p>
+            </div>
+            <button onclick="closeAiToeicModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark hover:bg-white/10 text-dim hover:text-white transition-all text-2xl">&times;</button>
+        </div>
         
-        <!-- AI Generate Bar -->
-        <div class="flex-1 min-w-[200px] flex items-center bg-dark border border-border rounded-xl px-3 focus-within:border-primary transition-all shadow-inner">
-            <input type="text" id="ai-word-input" placeholder="Nhập từ (cách nhau dấu phẩy, VD: fate, revenue)" 
-                   class="bg-transparent border-none outline-none text-white text-sm py-2 px-1 w-full"
-                   onkeypress="if(event.key === 'Enter') generateWithAI()">
-            <button onclick="generateWithAI()" id="btn-ai-gen" title="AI tự động tạo 4 câu hỏi" 
-                    class="p-1.5 hover:bg-primary/20 rounded-lg text-primary transition-all flex items-center gap-1">
-                <span class="text-xs font-bold whitespace-nowrap px-1">AI Gen</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+        <div class="p-8 flex flex-col gap-6">
+            <div>
+                <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Từ vựng tiếng Anh</label>
+                <textarea id="ai-modal-word-input" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm h-32 resize-none transition-all shadow-inner custom-scrollbar" placeholder="Nhập từ vựng tiếng Anh.&#10;Đạo hữu có thể nhập nhiều từ cách nhau bằng dấu phẩy.&#10;Ví dụ: dynamic, redundant, substantial"></textarea>
+                <p class="text-dim/60 text-[9px] mt-2 italic leading-relaxed">
+                    * Hệ thống sẽ tự động tra phiên âm, từ loại, dịch nghĩa, giải thích chi tiết, thêm ví dụ thực tế và phân loại chủ đề/trình độ phù hợp nhất cho mỗi từ.
+                </p>
+            </div>
+        </div>
+
+        <div class="px-8 py-6 border-t border-white/5 bg-white/5 flex justify-end gap-4">
+            <button onclick="closeAiToeicModal()" class="px-8 py-3 rounded-2xl font-bold text-sm text-dim hover:text-white transition-all uppercase tracking-widest">Hủy Bỏ</button>
+            <button id="btn-ai-modal-gen" onclick="generateWithAIFromModal()" class="px-10 py-3 bg-primary text-white rounded-2xl font-black text-sm shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 2 15 22 11 13 2 9 22 2"></polyline></svg>
+                <span>Kiến Tạo</span>
             </button>
         </div>
-
-        <button onclick="openToeicModal()" title="Thêm câu hỏi mới" class="w-11 h-11 bg-primary hover:bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-primary/20 transition-all flex items-center justify-center border border-blue-500/50">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        </button>
     </div>
 </div>
 
-<!-- Statistics Dashboard -->
-<div id="toeic-dashboard" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-[fadeIn_0.5s]">
-    <div class="col-span-1 bg-card p-5 rounded-2xl border border-border flex items-center gap-6 shadow-lg">
-        <div id="stats-chart" class="w-20 h-20 rounded-full stats-pie relative flex items-center justify-center shadow-inner" style="--p-mastered: 0%; --p-learning: 0%;">
-            <div class="w-14 h-14 bg-card rounded-full flex items-center justify-center text-[10px] font-bold text-gray-400">STATS</div>
-        </div>
-        <div class="flex-1 space-y-1">
-            <div class="flex justify-between items-center text-xs">
-                <span class="text-gray-500 font-bold">Đã lĩnh hội</span>
-                <span id="stats-mastered-count" class="text-spotify font-bold">0</span>
+<!-- Modal Thêm Bí Kíp (Modern Version) -->
+<div id="toeic-modal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center p-4 justify-center backdrop-blur-md animate-[fadeIn_0.2s]">
+    <div class="bg-card w-full sm:w-[600px] max-h-[90vh] overflow-y-auto custom-scrollbar rounded-3xl border border-white/10 shadow-2xl flex flex-col transform scale-100 transition-transform">
+        <div class="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+            <div>
+                <h2 class="font-black text-xl text-white tracking-tight uppercase">Thêm Bí Kíp Mới</h2>
+                <p class="text-dim text-[10px] font-bold uppercase tracking-widest mt-1">Ghi danh vào tàng kinh các</p>
             </div>
-            <div class="flex justify-between items-center text-xs">
-                <span class="text-gray-500 font-bold">Đang tu luyện</span>
-                <span id="stats-learning-count" class="text-primary font-bold">0</span>
-            </div>
-            <div class="flex justify-between items-center text-xs">
-                <span class="text-gray-500 font-bold">Chưa tu luyện</span>
-                <span id="stats-new-count" class="text-gray-400 font-bold">0</span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-span-1 md:col-span-2 bg-card p-5 rounded-2xl border border-border flex flex-col justify-center shadow-lg relative overflow-hidden">
-        <div class="flex justify-between items-center mb-3">
-            <h3 class="text-sm font-bold text-gray-300">Mục tiêu hôm nay</h3>
-            <span id="daily-goal-text" class="text-xs font-mono text-spotify font-bold">0/10 câu</span>
-        </div>
-        <div class="w-full h-3 bg-gray-800 rounded-full overflow-hidden">
-            <div id="daily-goal-bar" class="h-full bg-gradient-to-r from-spotify to-green-400 transition-all duration-500" style="width: 0%"></div>
-        </div>
-        <p class="text-[10px] text-gray-500 mt-2 italic">Mỗi khi đạo hữu "Đã lĩnh hội" hoặc trả lời đúng bí kíp mới, thanh này sẽ tăng lên!</p>
-        <!-- Decoration -->
-        <div class="absolute -right-4 -bottom-4 opacity-5 rotate-12">
-            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        </div>
-    </div>
-</div>
-
-<div id="tribulation-banner" class="hidden bg-gradient-to-r from-red-950/80 to-amber-950/80 p-5 rounded-2xl border border-red-500/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 shadow-xl animate-pulse">
-    <div class="flex items-center gap-4">
-        <span class="text-3xl animate-[bounce_1s_infinite]">⚡</span>
-        <div>
-            <h3 class="font-bold text-red-400 text-lg">TÂM MA KIẾP ĐẾN HẠN!</h3>
-            <p class="text-gray-300 text-sm mt-0.5">Đạo hữu có <span id="tribulation-count" class="font-bold text-amber-400">0</span> bí kíp ở mức Đại Viên Mãn. Hãy vượt qua để đưa tất cả lên Xuất Thần Nhập Hóa!</p>
-        </div>
-    </div>
-    <button onclick="startTribulation()" class="bg-gradient-to-r from-red-600 to-amber-600 hover:brightness-110 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all shadow-lg hover:scale-105 whitespace-nowrap">
-        Bắt Đầu Độ Kiếp
-    </button>
-</div>
-
-<div id="toeic-filters" class="flex flex-wrap gap-4 mb-6 items-center">
-    <div class="flex-1 min-w-[200px] relative">
-        <input type="text" id="toeic-search" placeholder="Tìm kiếm từ vựng, câu hỏi..." 
-               class="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:border-primary outline-none transition-all shadow-sm"
-               oninput="renderList()">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    </div>
-    <div class="flex gap-2">
-        <button onclick="setStatusFilter('all', this)" class="status-filter-btn active bg-gray-800 text-xs font-bold px-3 py-1.5 rounded-lg border border-transparent transition-all">Tất cả</button>
-        <button onclick="setStatusFilter('new', this)" class="status-filter-btn text-gray-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-transparent transition-all hover:bg-gray-800">Chưa tu luyện</button>
-        <button onclick="setStatusFilter('learning', this)" class="status-filter-btn text-gray-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-border/30 transition-all hover:bg-gray-800">Đang tu luyện</button>
-        <button onclick="setStatusFilter('mastered', this)" class="status-filter-btn text-gray-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-transparent transition-all hover:bg-gray-800">Đã lĩnh hội</button>
-    </div>
-</div>
-
-<div id="toeic-tabs" class="flex gap-2 border-b border-gray-800 mb-6">
-    <button id="btn-tab-vocal" onclick="switchTab('vocal')" class="px-6 py-3 font-bold text-sm border-b-2 border-primary text-white transition-all">
-        Từ vựng (Vocabulary)
-    </button>
-    <button id="btn-tab-grammar" onclick="switchTab('grammar')" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-all">
-        Ngữ pháp (Grammar)
-    </button>
-</div>
-
-<div id="toeic-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-y-auto pb-24 h-[calc(100vh-230px)] custom-scrollbar">
-</div>
-
-<div id="toeic-practice-container" class="hidden flex flex-col items-center justify-start mt-4 w-full min-h-[calc(100vh-230px)] overflow-y-auto pb-12 custom-scrollbar">
-    <!-- Practice Header with Navigation -->
-    <div class="w-full max-w-xl flex justify-between items-center mb-6 px-5 py-3.5 bg-card/50 rounded-2xl border border-border/50 gap-4">
-        <button onclick="togglePracticeMode()" class="flex items-center gap-1.5 text-gray-400 hover:text-white font-bold text-xs transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            <span>Quay lại</span>
-        </button>
-        <div class="text-sm font-bold text-white tracking-wide" id="practice-header-title">Luyện tập</div>
-        <div id="practice-progress-text" class="text-xs font-mono text-spotify font-bold bg-spotify/10 px-3 py-1 rounded-full border border-spotify/20">0 / 0</div>
-    </div>
-    
-    <div id="flashcard-wrapper" class="w-full flex-1 flex items-center justify-center">
-        <!-- Practice setup panel or actual flashcards will be injected here -->
-    </div>
-</div>
-
-<div id="toeic-modal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center p-4 justify-center backdrop-blur-sm animate-[fadeIn_0.2s]">
-    <div class="bg-card w-full sm:w-[500px] max-h-[90vh] overflow-y-auto custom-scrollbar rounded-2xl border border-gray-700 shadow-2xl flex flex-col transform scale-100 transition-transform">
-        <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center bg-white/5">
-            <h2 class="font-bold text-lg text-white">Thêm câu hỏi mới</h2>
-            <button onclick="closeToeicModal()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            <button onclick="closeToeicModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark hover:bg-white/10 text-dim hover:text-white transition-all text-2xl">&times;</button>
         </div>
         
-        <div class="p-6 flex flex-col gap-4">
+        <div class="p-8 flex flex-col gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Từ vựng (Word)</label>
+                    <input type="text" id="modal-word" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm transition-all shadow-inner" placeholder="VD: target">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Nghĩa tiếng Việt</label>
+                    <input type="text" id="modal-meaning" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm transition-all shadow-inner" placeholder="VD: mục tiêu">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Từ loại</label>
+                    <input type="text" id="modal-pos" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm transition-all" placeholder="VD: noun">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Phiên âm</label>
+                    <input type="text" id="modal-phonetic" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm transition-all" placeholder="VD: /ˈtɑːr.ɡɪt/">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Trình độ</label>
+                    <select id="modal-level" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm transition-all cursor-pointer">
+                        <option value="A1">A1</option>
+                        <option value="A2">A2</option>
+                        <option value="B1" selected>B1</option>
+                        <option value="B2">B2</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Chủ đề (Topic)</label>
+                    <input type="text" id="modal-topic" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm transition-all" placeholder="VD: Business">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Audio URL</label>
+                    <input type="text" id="modal-audio" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm transition-all" placeholder="VD: https://...">
+                </div>
+            </div>
+
             <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Phân loại</label>
-                <select id="modal-type" class="w-full p-3 rounded-lg bg-dark border border-gray-700 text-white focus:border-primary outline-none text-sm cursor-pointer">
-                    <option value="vocal">Từ vựng (Vocabulary)</option>
-                    <option value="grammar">Ngữ pháp (Grammar)</option>
-                </select>
+                <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Giải nghĩa tiếng Việt</label>
+                <textarea id="modal-def-vn" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm h-24 resize-none transition-all shadow-inner custom-scrollbar" placeholder="Giải thích chi tiết nghĩa của từ..."></textarea>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Ví dụ ứng dụng</label>
+                <textarea id="modal-example" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm h-24 resize-none transition-all shadow-inner custom-scrollbar" placeholder="VD: I had reached my target weight."></textarea>
             </div>
             
             <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Câu hỏi / Từ vựng</label>
-                <textarea id="modal-question" class="w-full p-3 rounded-lg bg-dark border border-gray-700 text-white focus:border-primary outline-none text-sm h-20 resize-none custom-scrollbar" placeholder="Ví dụ: Mandatory (adj) hoặc The new software... _______"></textarea>
+                <label class="block text-[10px] font-bold text-dim mb-2 uppercase tracking-widest">Giải nghĩa tiếng Anh</label>
+                <textarea id="modal-def-en" class="w-full p-4 rounded-2xl bg-dark border border-border text-white focus:border-primary outline-none text-sm h-24 resize-none transition-all shadow-inner custom-scrollbar" placeholder="Definition in English..."></textarea>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">4 Đáp án (Chọn nút tròn cho đáp án đúng)</label>
-                <div class="space-y-2" id="modal-options">
-                    <div class="flex items-center gap-3">
-                        <input type="radio" name="correct-ans" value="0" checked class="w-4 h-4 accent-spotify cursor-pointer">
-                        <input type="text" class="opt-input flex-1 p-2.5 rounded-lg bg-dark border border-gray-700 text-sm text-white focus:border-spotify outline-none" placeholder="Đáp án A">
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <input type="radio" name="correct-ans" value="1" class="w-4 h-4 accent-spotify cursor-pointer">
-                        <input type="text" class="opt-input flex-1 p-2.5 rounded-lg bg-dark border border-gray-700 text-sm text-white focus:border-spotify outline-none" placeholder="Đáp án B">
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <input type="radio" name="correct-ans" value="2" class="w-4 h-4 accent-spotify cursor-pointer">
-                        <input type="text" class="opt-input flex-1 p-2.5 rounded-lg bg-dark border border-gray-700 text-sm text-white focus:border-spotify outline-none" placeholder="Đáp án C">
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <input type="radio" name="correct-ans" value="3" class="w-4 h-4 accent-spotify cursor-pointer">
-                        <input type="text" class="opt-input flex-1 p-2.5 rounded-lg bg-dark border border-gray-700 text-sm text-white focus:border-spotify outline-none" placeholder="Đáp án D">
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <div class="px-6 py-4 border-t border-gray-800 bg-dark/50 flex justify-end gap-3">
-            <button onclick="closeToeicModal()" class="px-5 py-2 rounded-lg font-bold text-sm text-gray-400 hover:text-white transition-colors">Hủy</button>
-            <button onclick="saveNewItem()" id="btn-save-toeic" class="px-5 py-2 bg-spotify hover:brightness-110 text-black rounded-lg font-bold text-sm shadow-md transition-all">
-                Lưu vào kho
+        <div class="px-8 py-6 border-t border-white/5 bg-white/5 flex justify-end gap-4">
+            <button onclick="closeToeicModal()" class="px-8 py-3 rounded-2xl font-bold text-sm text-dim hover:text-white transition-all uppercase tracking-widest">Hủy Bỏ</button>
+            <button onclick="saveNewItem()" id="btn-save-toeic" class="px-10 py-3 bg-primary text-white rounded-2xl font-black text-sm shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest">
+                Lưu Bí Kíp
             </button>
         </div>
     </div>
 </div>
+
+
+<style>
+    .perspective-1000 {
+        perspective: 1000px;
+    }
+    .preserve-3d {
+        transform-style: preserve-3d;
+    }
+    .backface-hidden {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+        transform: rotateY(180deg);
+    }
+    .flipped .flip-card-inner {
+        transform: rotateY(180deg);
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+    .animate-shake {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.2);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(59, 130, 246, 0.4);
+    }
+</style>

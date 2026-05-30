@@ -51,7 +51,7 @@
             <div class="relative z-10 flex flex-col items-center w-full max-w-lg h-full justify-center">
                 
                 <!-- Album Art Large -->
-                <div id="player-cover-large" style="aspect-ratio: 1 / 1;" class="w-[85%] max-w-[500px] rounded-3xl bg-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden mb-10 transition-transform duration-500 flex items-center justify-center group/cover">
+                <div id="player-cover-large" class="w-[200px] h-[200px] sm:w-[240px] sm:h-[240px] lg:w-[280px] lg:h-[280px] rounded-3xl bg-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden mb-5 transition-all duration-700 flex items-center justify-center group/cover relative shrink-0">
                     <!-- Default SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#1ed760" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-50">
                         <path d="M9 18V5l12-2v13"></path>
@@ -61,21 +61,30 @@
                 </div>
                 
                 <!-- Track Info -->
-                <div class="text-center w-full mb-10 px-4">
+                <div class="text-center w-full mb-5 px-4">
                     <h2 id="player-title-large" class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white truncate mb-3 drop-shadow-md tracking-tight">Chưa phát bài nào</h2>
-                    <p id="player-artist-large" class="text-gray-300 text-lg sm:text-xl truncate font-medium">Vui lòng chọn bài từ danh sách</p>
+                    <p id="player-artist-large" class="text-gray-300 text-lg sm:text-xl truncate font-medium mb-3">Vui lòng chọn bài từ danh sách</p>
+                    
+                    <!-- Audio Visualizer Bars -->
+                    <div id="audio-visualizer" class="flex items-center justify-center gap-1.5 h-6 opacity-0 transition-all duration-500">
+                        <div class="v-bar w-1 bg-spotify rounded-full h-3"></div>
+                        <div class="v-bar w-1 bg-spotify rounded-full h-5"></div>
+                        <div class="v-bar w-1 bg-spotify rounded-full h-2"></div>
+                        <div class="v-bar w-1 bg-spotify rounded-full h-6"></div>
+                        <div class="v-bar w-1 bg-spotify rounded-full h-4"></div>
+                    </div>
                 </div>
 
                 <!-- Controls Wrapper -->
-                <div class="w-full flex flex-col items-center gap-8 px-4">
+                <div class="w-full flex flex-col items-center gap-5 px-4">
                     <!-- Progress Bar -->
-                    <div class="flex items-center gap-4 w-full text-sm font-medium text-gray-300">
+                    <div class="flex items-center gap-4 w-full text-sm font-medium text-gray-500 dark:text-gray-300">
                         <span id="curr-time" class="w-12 text-right opacity-80">0:00</span>
                         <div class="relative flex-1 h-1.5 group/progress">
                             <input type="range" id="progress-bar" value="0" max="100" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                            <div id="progress-bg" class="absolute inset-0 bg-white/20 rounded-full"></div>
-                            <div id="progress-fill" class="absolute inset-y-0 left-0 bg-white group-hover/progress:bg-spotify rounded-full transition-all" style="width: 0%"></div>
-                            <div id="progress-thumb" class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] opacity-0 group-hover/progress:opacity-100 transition-all pointer-events-none" style="left: 0%"></div>
+                            <div id="progress-bg" class="absolute inset-0 bg-gray-200 dark:bg-white/10 rounded-full"></div>
+                            <div id="progress-fill" class="absolute inset-y-0 left-0 bg-spotify rounded-full transition-all" style="width: 0%"></div>
+                            <div id="progress-thumb" class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-spotify rounded-full shadow-[0_0_10px_rgba(30,215,96,0.5)] opacity-0 group-hover/progress:opacity-100 transition-all pointer-events-none" style="left: 0%"></div>
                         </div>
                         <span id="total-time" class="w-12 opacity-80">0:00</span>
                     </div>
@@ -131,8 +140,8 @@
                         </svg>
                         <div class="relative flex-1 h-1.5 group/vol">
                             <input type="range" id="volume-bar" value="100" max="100" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                            <div id="volume-bg" class="absolute inset-0 bg-white/20 rounded-full"></div>
-                            <div id="volume-fill" class="absolute inset-y-0 left-0 bg-white group-hover/vol:bg-spotify rounded-full transition-all" style="width: 100%"></div>
+                            <div id="volume-bg" class="absolute inset-0 bg-gray-200 dark:bg-white/10 rounded-full"></div>
+                            <div id="volume-fill" class="absolute inset-y-0 left-0 bg-spotify rounded-full transition-all" style="width: 100%"></div>
                         </div>
                     </div>
                 </div>
@@ -144,6 +153,14 @@
             <div class="px-6 py-5 border-b border-white/5 text-sm font-bold text-white uppercase tracking-widest bg-dark/40 flex justify-between items-center backdrop-blur-xl">
                 <span>Danh sách phát</span>
                 <span class="text-xs text-spotify bg-spotify/10 px-3 py-1 rounded-full font-medium" id="queue-count">0 Bài hát</span>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="px-6 py-3 border-b border-white/5 bg-dark/20 flex items-center gap-3">
+                <div class="relative flex-1">
+                    <input type="text" id="music-search-input" oninput="filterMusicList()" placeholder="Tìm kiếm bài hát hoặc ca sĩ..." class="w-full bg-dark/10 dark:bg-dark/60 border border-border dark:border-gray-700 rounded-xl py-2.5 px-4 pl-10 text-xs text-gray-100 dark:text-white outline-none focus:border-spotify dark:focus:border-spotify transition-all placeholder-gray-500">
+                    <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
             </div>
             
             <div id="mp3-list" class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-1">
@@ -168,5 +185,81 @@
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Vinyl/CD Spin Animation */
+@keyframes spin-cd {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.cd-spinning {
+    animation: spin-cd 15s linear infinite;
+    border-radius: 9999px !important;
+    border: 8px solid rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 45px rgba(30, 215, 96, 0.4), inset 0 0 25px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Đảm bảo hình ảnh bìa album bên trong đĩa CD cũng tròn xoe 100% khi quay */
+.cd-spinning img {
+    border-radius: 9999px !important;
+}
+
+/* CSS Audio Visualizer */
+@keyframes bounce-bar {
+    0%, 100% { transform: scaleY(0.2); }
+    50% { transform: scaleY(1); }
+}
+.v-bar {
+    transform-origin: bottom;
+}
+.visualizer-active .v-bar {
+    animation: bounce-bar 0.8s ease-in-out infinite;
+}
+.visualizer-active .v-bar:nth-child(1) { animation-delay: 0.15s; animation-duration: 0.7s; }
+.visualizer-active .v-bar:nth-child(2) { animation-delay: 0.35s; animation-duration: 0.9s; }
+.visualizer-active .v-bar:nth-child(3) { animation-delay: 0.0s;  animation-duration: 0.6s; }
+.visualizer-active .v-bar:nth-child(4) { animation-delay: 0.45s; animation-duration: 0.8s; }
+.visualizer-active .v-bar:nth-child(5) { animation-delay: 0.25s; animation-duration: 0.5s; }
+
+/* CD Container Transition */
+#player-cover-large {
+    position: relative;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Đĩa CD cổ điển: Phản chiếu bóng loáng và rãnh đĩa than bán trong suốt phủ lên trên ảnh bìa */
+#player-cover-large.cd-spinning::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: 
+        repeating-radial-gradient(
+            circle,
+            rgba(0, 0, 0, 0) 0,
+            rgba(0, 0, 0, 0) 6px,
+            rgba(255, 255, 255, 0.04) 7px,
+            rgba(0, 0, 0, 0) 8px
+        ),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7);
+}
+
+/* Lỗ CD trung tâm cổ điển */
+#player-cover-large.cd-spinning::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15%;
+    height: 15%;
+    background: var(--color-bg-card); /* Tự động đổi màu nền khớp tuyệt đối với theme */
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.9);
+    z-index: 20;
 }
 </style>

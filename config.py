@@ -36,7 +36,8 @@ CONFIG_PATHS = {
     "focus_data": os.path.join(BASE_DIR, "data", "focus"),
     "notifier_data": os.path.join(BASE_DIR, "data"), # Thêm này để notifier dùng chung
     "user_data": os.path.join(BASE_DIR, "data", "user"),
-    "ambient": os.path.join(BASE_DIR, "data", "ambient")
+    "ambient": os.path.join(BASE_DIR, "data", "ambient"),
+    "epub_data": os.path.join(BASE_DIR, "data", "epub")
 }
 
 # Đảm bảo các thư mục luôn tồn tại
@@ -71,5 +72,5 @@ if getattr(sys, 'frozen', False):
                     except Exception as e:
                         pass
 # Cấu hình phiên bản và đường dẫn cập nhật tự động
-CURRENT_VERSION = "1.2"
+CURRENT_VERSION = "1.3"
 UPDATE_URL = "https://raw.githubusercontent.com/fate1105/frogress/main/version.json"

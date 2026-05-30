@@ -7,7 +7,9 @@
     <title>Frogress</title>
     <link rel="icon" type="image/png" href="icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,700;1,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&display=swap"
+        rel="stylesheet">
     <script type="text/javascript" src="/eel.js"></script>
 
     <script>
@@ -186,7 +188,8 @@
             height: 100%;
         }
 
-        .flip-card-front, .flip-card-back {
+        .flip-card-front,
+        .flip-card-back {
             position: absolute !important;
             width: 100%;
             height: 100%;
@@ -219,11 +222,9 @@
 
         /* --- TOEIC STATS & INPUT CSS --- */
         .stats-pie {
-            background: conic-gradient(
-                var(--color-spotify) var(--p-mastered), 
-                var(--color-primary) var(--p-mastered) var(--p-learning), 
-                var(--color-border) var(--p-learning) 100%
-            );
+            background: conic-gradient(var(--color-spotify) var(--p-mastered),
+                    var(--color-primary) var(--p-mastered) var(--p-learning),
+                    var(--color-border) var(--p-learning) 100%);
         }
 
         .typing-input:focus {
@@ -243,7 +244,8 @@
     <aside id="sidebar"
         class="sidebar-transition absolute md:relative w-[260px] bg-card border-r border-border flex flex-col z-50 h-full -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
         <div class="flex items-center justify-between p-5 border-b border-border/50 mb-2">
-            <div onclick="loadModule(null, 'dashboard')" class="flex items-center gap-3 overflow-hidden cursor-pointer hover:opacity-70 transition-all">
+            <div onclick="loadModule(null, 'dashboard')"
+                class="flex items-center gap-3 overflow-hidden cursor-pointer hover:opacity-70 transition-all">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-blue-400 p-[2px] shadow-lg shrink-0">
                     <div class="w-full h-full bg-dark rounded-[9px] flex items-center justify-center overflow-hidden">
                         <img src="icon.png" alt="Logo" class="w-6 h-6 object-contain"
@@ -265,25 +267,25 @@
         <nav class="flex-1 px-3 space-y-1">
             <button onclick="loadModule(this, 'focus')"
                 class="menu-btn active w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <img src="assets/icons/menu-pomodoro.png" class="w-6 h-6 object-contain">
+                <img src="assets/icons/menu-pomodoro.png" class="w-6 h-6 object-contain shrink-0">
                 <span class="menu-text font-medium whitespace-nowrap">Tu luyện</span>
             </button>
 
             <button onclick="loadModule(this, 'todolist')"
                 class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <img src="assets/icons/menu-todo.png" class="w-6 h-6 object-contain">
+                <img src="assets/icons/menu-todo.png" class="w-6 h-6 object-contain shrink-0">
                 <span class="menu-text font-medium whitespace-nowrap">Nhiệm vụ tông môn</span>
             </button>
 
             <button onclick="loadModule(this, 'notes')"
                 class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <img src="assets/icons/menu-notes.png" class="w-6 h-6 object-contain">
+                <img src="assets/icons/menu-notes.png" class="w-6 h-6 object-contain shrink-0">
                 <span class="menu-text font-medium whitespace-nowrap">Tàng kinh các</span>
             </button>
 
             <button onclick="loadModule(this, 'toeic')"
                 class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <img src="assets/icons/menu-english.png" class="w-6 h-6 object-contain">
+                <img src="assets/icons/menu-english.png" class="w-6 h-6 object-contain shrink-0">
                 <span class="menu-text font-medium whitespace-nowrap">Ngoại ngữ chân kinh</span>
             </button>
 
@@ -291,36 +293,52 @@
 
             <button onclick="loadModule(this, 'profile')"
                 class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <span class="w-6 h-6 flex items-center justify-center text-xl transition-all">🐸</span>
-                <span class="menu-text font-medium whitespace-nowrap">Tu Hành Lục</span>
+                <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                    <span class="text-xl leading-none">🐸</span>
+                </div>
+                <span class="menu-text font-medium whitespace-nowrap">Tu hành lục</span>
             </button>
 
             <button onclick="loadModule(this, 'youtube')"
                 class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <img src="assets/icons/menu-music.png" class="w-6 h-6 object-contain">
+                <img src="assets/icons/menu-music.png" class="w-6 h-6 object-contain shrink-0">
                 <span class="menu-text font-medium whitespace-nowrap">Linh âm động</span>
+            </button>
+
+            <button onclick="loadModule(this, 'epub')"
+                class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
+                <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                    <span class="text-xl leading-none">📖</span>
+                </div>
+                <span class="menu-text font-medium whitespace-nowrap">Tiên thư</span>
             </button>
 
             <button onclick="loadModule(this, 'reminders')"
                 class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <img src="assets/icons/menu-reminder.png" class="w-6 h-6 object-contain">
+                <img src="assets/icons/menu-reminder.png" class="w-6 h-6 object-contain shrink-0">
                 <span class="menu-text font-medium whitespace-nowrap">Linh hạc truyền tin</span>
             </button>
 
             <button onclick="loadModule(this, 'omniloader')"
                 class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <img src="assets/icons/menu-loader.png" class="w-6 h-6 object-contain">
+                <img src="assets/icons/menu-loader.png" class="w-6 h-6 object-contain shrink-0">
                 <span class="menu-text font-medium whitespace-nowrap">Vạn bảo khố</span>
             </button>
 
             <button onclick="loadModule(this, 'threads')"
                 class="menu-btn w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-all group">
-                <img src="assets/icons/menu-threads.png" class="w-6 h-6 object-contain">
+                <img src="assets/icons/menu-threads.png" class="w-6 h-6 object-contain shrink-0">
                 <span class="menu-text font-medium whitespace-nowrap">Tiên cảnh thơ ca</span>
             </button>
         </nav>
 
         <div class="p-4 border-t border-border mt-auto">
+            <!-- App Info -->
+            <div class="mb-4 text-center cursor-default menu-text transition-opacity duration-300">
+                <p class="text-sm text-dim font-bold mb-0.5">v1.3</p>
+                <p class="text-sm text-primary font-bold">Fate</p>
+            </div>
+
             <button onclick="toggleTheme()"
                 class="w-full flex items-center justify-center py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-primary transition-all group overflow-hidden">
                 <span id="theme-icon" class="text-xl relative w-6 h-6 flex items-center justify-center">
@@ -360,63 +378,82 @@
     </main>
 
     <!-- Update Check Modal -->
-    <div id="update-modal" class="hidden fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4 backdrop-blur-md animate-[fadeIn_0.3s]">
-        <div class="relative bg-[#ffffff] dark:bg-[#0f121a] w-full max-w-lg rounded-3xl border border-[#e2e8f0] dark:border-[#1e293b] p-6 text-center shadow-[0_20px_50px_rgba(99,102,241,0.15)] dark:shadow-[0_20px_50px_rgba(59,130,246,0.3)] overflow-hidden">
+    <div id="update-modal"
+        class="hidden fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4 backdrop-blur-md animate-[fadeIn_0.3s]">
+        <div
+            class="relative bg-[#ffffff] dark:bg-[#0f121a] w-full max-w-lg rounded-3xl border border-[#e2e8f0] dark:border-[#1e293b] p-6 text-center shadow-[0_20px_50px_rgba(99,102,241,0.15)] dark:shadow-[0_20px_50px_rgba(59,130,246,0.3)] overflow-hidden">
             <!-- Background Glow -->
-            <div class="absolute -inset-10 bg-gradient-to-tr from-blue-500/5 to-indigo-500/5 dark:from-blue-500/10 dark:to-indigo-500/20 blur-3xl pointer-events-none rounded-full"></div>
-            
+            <div
+                class="absolute -inset-10 bg-gradient-to-tr from-blue-500/5 to-indigo-500/5 dark:from-blue-500/10 dark:to-indigo-500/20 blur-3xl pointer-events-none rounded-full">
+            </div>
+
             <!-- Compact Top Row (Icon + Title Side-by-Side) -->
             <div class="flex items-center justify-center gap-3 mb-2.5">
                 <div class="relative w-10 h-10 flex items-center justify-center flex-shrink-0">
                     <div class="absolute inset-0 bg-blue-500/10 dark:bg-blue-500/20 rounded-full animate-pulse"></div>
-                    <div class="absolute inset-1 bg-gradient-to-tr from-[#3b82f6] to-[#6366f1] rounded-full flex items-center justify-center text-xl shadow-md border border-blue-200">
+                    <div
+                        class="absolute inset-1 bg-gradient-to-tr from-[#3b82f6] to-[#6366f1] rounded-full flex items-center justify-center text-xl shadow-md border border-blue-200">
                         📣
                     </div>
                 </div>
-                <h2 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-[#2563eb] to-[#4f46e5] dark:from-[#60a5fa] dark:to-[#818cf8] uppercase tracking-wider">
+                <h2
+                    class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-[#2563eb] to-[#4f46e5] dark:from-[#60a5fa] dark:to-[#818cf8] uppercase tracking-wider">
                     ĐỘT PHÁ PHIÊN BẢN MỚI!
                 </h2>
             </div>
 
             <!-- Compact Version Bridge -->
             <div class="flex items-center justify-center gap-2 mb-3">
-                <span id="current-version-tag" class="px-2.5 py-0.5 bg-[#f1f5f9] dark:bg-[#1e293b] text-[#475569] dark:text-[#cbd5e1] text-[10px] font-bold rounded-full border border-[#cbd5e1]/30">
-                    v1.1
-                </span>
-                <span class="text-[#3b82f6] dark:text-[#60a5fa] text-[10px] font-semibold animate-pulse">⚡ Đột Phá ──></span>
-                <span id="update-version-tag" class="px-2.5 py-0.5 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-[#ffffff] text-[10px] font-extrabold rounded-full shadow-sm">
+                <span id="current-version-tag"
+                    class="px-2.5 py-0.5 bg-[#f1f5f9] dark:bg-[#1e293b] text-[#475569] dark:text-[#cbd5e1] text-[10px] font-bold rounded-full border border-[#cbd5e1]/30">
                     v1.2
                 </span>
+                <span class="text-[#3b82f6] dark:text-[#60a5fa] text-[10px] font-semibold animate-pulse">⚡ Đột Phá
+                    ──></span>
+                <span id="update-version-tag"
+                    class="px-2.5 py-0.5 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-[#ffffff] text-[10px] font-extrabold rounded-full shadow-sm">
+                    v1.3
+                </span>
             </div>
-            
+
             <p class="text-[#334155] dark:text-[#cbd5e1] text-xs leading-relaxed mb-3">
-                Hệ thống phát hiện phiên bản mới đã sẵn sàng phục vụ đạo hữu tu tiên! Mời đạo hữu kiểm tra các cơ duyên mới dưới đây:
             </p>
-            
+
             <!-- Expanded, Wide Changelog Box -->
-            <div id="update-changelog-box" class="bg-[#f8fafc] dark:bg-[#090b11] border border-[#cbd5e1]/30 dark:border-[#1e293b]/50 rounded-2xl p-4 mb-4 text-left text-xs max-h-56 overflow-y-auto hidden">
-                <strong class="text-[#2563eb] dark:text-[#60a5fa] block mb-2 font-bold">💡 Nhật ký cập nhật cơ duyên:</strong>
-                <p id="update-changelog-text" class="whitespace-pre-wrap leading-relaxed text-[#475569] dark:text-[#94a3b8] font-medium"></p>
+            <div id="update-changelog-box"
+                class="bg-[#f8fafc] dark:bg-[#090b11] border border-[#cbd5e1]/30 dark:border-[#1e293b]/50 rounded-2xl p-4 mb-4 text-left text-xs max-h-56 overflow-y-auto hidden">
+                <strong class="text-[#2563eb] dark:text-[#60a5fa] block mb-2 font-bold">💡 Nhật ký cập nhật cơ
+                    duyên:</strong>
+                <p id="update-changelog-text"
+                    class="whitespace-pre-wrap leading-relaxed text-[#475569] dark:text-[#94a3b8] font-medium"></p>
             </div>
-            
+
             <!-- Downloading Progress Bar -->
             <div id="update-progress-container" class="hidden mt-4 mb-4 text-left">
-                <div class="flex justify-between items-center mb-1.5 text-xs font-bold text-[#2563eb] dark:text-[#60a5fa]">
+                <div
+                    class="flex justify-between items-center mb-1.5 text-xs font-bold text-[#2563eb] dark:text-[#60a5fa]">
                     <span id="update-progress-label">Đang tải bản đột phá...</span>
                     <span id="update-progress-percent">0%</span>
                 </div>
-                <div class="w-full bg-[#f1f5f9] dark:bg-[#111420] rounded-full h-3 overflow-hidden border border-[#cbd5e1]/30 dark:border-[#1e293b]">
-                    <div id="update-progress-bar" class="bg-gradient-to-r from-[#3b82f6] to-[#6366f1] h-full w-0 transition-all duration-150 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                <div
+                    class="w-full bg-[#f1f5f9] dark:bg-[#111420] rounded-full h-3 overflow-hidden border border-[#cbd5e1]/30 dark:border-[#1e293b]">
+                    <div id="update-progress-bar"
+                        class="bg-gradient-to-r from-[#3b82f6] to-[#6366f1] h-full w-0 transition-all duration-150 shadow-[0_0_10px_rgba(59,130,246,0.5)]">
+                    </div>
                 </div>
-                <p id="update-progress-info" class="text-center text-[10px] text-[#64748b] dark:text-[#94a3b8] mt-2 italic">Hệ thống sẽ tự khởi động lại sau khi giải nén thành công</p>
+                <p id="update-progress-info"
+                    class="text-center text-[10px] text-[#64748b] dark:text-[#94a3b8] mt-2 italic">Hệ thống sẽ tự khởi
+                    động lại sau khi giải nén thành công</p>
             </div>
-            
+
             <!-- Action Buttons -->
             <div id="update-buttons-container" class="flex gap-4">
-                <button onclick="closeUpdateModal()" class="w-1/3 bg-transparent hover:bg-[#f1f5f9] dark:hover:bg-[#181d2c] text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-[#ffffff] font-bold py-2.5 px-4 border border-[#cbd5e1] dark:border-[#1e293b] rounded-2xl active:scale-[0.98] transition-all duration-200 text-xs uppercase tracking-wider">
+                <button onclick="closeUpdateModal()"
+                    class="w-1/3 bg-transparent hover:bg-[#f1f5f9] dark:hover:bg-[#181d2c] text-[#64748b] dark:text-[#94a3b8] hover:text-[#0f172a] dark:hover:text-[#ffffff] font-bold py-2.5 px-4 border border-[#cbd5e1] dark:border-[#1e293b] rounded-2xl active:scale-[0.98] transition-all duration-200 text-xs uppercase tracking-wider">
                     Để sau
                 </button>
-                <button id="update-download-btn" onclick="startAutoUpdate()" class="w-2/3 bg-gradient-to-r from-[#3b82f6] via-[#4f46e5] to-[#6366f1] text-[#ffffff] font-black py-2.5 px-6 rounded-2xl hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition-all duration-200 text-xs uppercase tracking-wider">
+                <button id="update-download-btn" onclick="startAutoUpdate()"
+                    class="w-2/3 bg-gradient-to-r from-[#3b82f6] via-[#4f46e5] to-[#6366f1] text-[#ffffff] font-black py-2.5 px-6 rounded-2xl hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_8px_20px_rgba(79,70,229,0.3)] transition-all duration-200 text-xs uppercase tracking-wider">
                     Nâng cấp ngay
                 </button>
             </div>
@@ -424,35 +461,46 @@
     </div>
 
     <!-- Breakthrough Modal -->
-    <div id="breakthrough-modal" class="hidden fixed inset-0 bg-black/85 z-[9999] flex items-center justify-center p-4 backdrop-blur-md animate-[fadeIn_0.3s]">
-        <div class="relative bg-gradient-to-b from-amber-950/90 to-black/95 w-full max-w-lg rounded-3xl border border-amber-500/50 p-8 text-center shadow-[0_0_50px_rgba(245,158,11,0.25)] overflow-hidden">
+    <div id="breakthrough-modal"
+        class="hidden fixed inset-0 bg-black/85 z-[9999] flex items-center justify-center p-4 backdrop-blur-md animate-[fadeIn_0.3s]">
+        <div
+            class="relative bg-gradient-to-b from-amber-950/90 to-black/95 w-full max-w-lg rounded-3xl border border-amber-500/50 p-8 text-center shadow-[0_0_50px_rgba(245,158,11,0.25)] overflow-hidden">
             <!-- Background Glow -->
-            <div class="absolute -inset-10 bg-gradient-to-tr from-amber-500/10 to-orange-500/10 blur-2xl pointer-events-none rounded-full"></div>
-            
+            <div
+                class="absolute -inset-10 bg-gradient-to-tr from-amber-500/10 to-orange-500/10 blur-2xl pointer-events-none rounded-full">
+            </div>
+
             <!-- Icon/Visual -->
             <div class="relative w-32 h-32 mx-auto mb-6 flex items-center justify-center">
                 <div class="absolute inset-0 bg-amber-500/20 rounded-full animate-ping"></div>
-                <div class="absolute inset-2 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-full flex items-center justify-center text-6xl shadow-lg border border-amber-300">
+                <div
+                    class="absolute inset-2 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-full flex items-center justify-center text-6xl shadow-lg border border-amber-300">
                     ⚡
                 </div>
             </div>
-            
+
             <!-- Text Content -->
-            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 uppercase tracking-widest mb-2 animate-pulse">
+            <h2
+                class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 uppercase tracking-widest mb-2 animate-pulse">
                 ĐỘT PHÁ THÀNH CÔNG!
             </h2>
-            <p class="text-gray-400 text-xs uppercase tracking-widest mb-6 font-semibold">Thiên đạo hộ thể • Cảnh giới thăng hoa</p>
-            
+            <p class="text-gray-400 text-xs uppercase tracking-widest mb-6 font-semibold">Thiên đạo hộ thể • Cảnh giới
+                thăng hoa</p>
+
             <p class="text-white text-base leading-relaxed mb-6">
-                Chúc mừng đạo hữu dũng cảm tinh tinh tiến tiến, tu vi đạt đến độ chín muồi! Ngươi đã đột phá thành công lên cảnh giới mới:
+                Chúc mừng đạo hữu dũng cảm tinh tinh tiến tiến, tu vi đạt đến độ chín muồi! Ngươi đã đột phá thành công
+                lên cảnh giới mới:
             </p>
-            
-            <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl py-4 px-6 mb-8 inline-block shadow-inner">
-                <span id="breakthrough-level-name" class="text-2xl font-black text-amber-300 tracking-wide">Luyện Khí Kỳ</span>
+
+            <div
+                class="bg-amber-500/10 border border-amber-500/30 rounded-2xl py-4 px-6 mb-8 inline-block shadow-inner">
+                <span id="breakthrough-level-name" class="text-2xl font-black text-amber-300 tracking-wide">Luyện Khí
+                    Kỳ</span>
             </div>
-            
+
             <!-- Action Button -->
-            <button onclick="closeBreakthroughModal()" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-black font-black py-4 px-8 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg text-sm uppercase tracking-wider">
+            <button onclick="closeBreakthroughModal()"
+                class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-black font-black py-4 px-8 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg text-sm uppercase tracking-wider">
                 Thu nhận tu vi & Tiếp tục tu hành
             </button>
         </div>
@@ -462,7 +510,13 @@
 
     <script src="js/main.js"></script>
     <script src="js/dashboard.js"></script>
-    <script src="js/toeic.js"></script>
+    <!-- English Module -->
+    <script src="js/english/data-service.js"></script>
+    <script src="js/english/srs-engine.js"></script>
+    <script src="js/english/practice-engine.js"></script>
+    <script src="js/english/ui-manager.js"></script>
+    <script src="js/english/english.js"></script>
+
     <script src="js/threads.js"></script>
     <script src="js/youtube.js"></script>
     <script src="js/todolist.js"></script>
@@ -471,5 +525,9 @@
     <script src="js/omniloader.js"></script>
     <script src="js/focus.js"></script>
     <script src="js/profile.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+    <script src="js/epub.js"></script>
 </body>
+
 </html>

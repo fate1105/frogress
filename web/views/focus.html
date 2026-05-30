@@ -23,14 +23,14 @@
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-        <!-- LEFT: Timer Section (7/12) -->
+        <!-- LEFT: Timer Section (6/12) -->
         <div
-            class="lg:col-span-7 bg-card border border-border rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-2xl min-h-[400px]">
+            class="lg:col-span-6 bg-card border border-border rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-2xl min-h-[400px]">
             <!-- Background Decoration -->
             <div class="absolute -top-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-[100px]"></div>
 
-            <div class="relative w-64 h-64 flex items-center justify-center">
-                <svg class="absolute inset-0 w-full h-full -rotate-90">
+            <div class="relative w-64 h-64 flex items-center justify-center self-center mx-auto">
+                <svg class="absolute inset-0 w-64 h-64 -rotate-90" viewBox="0 0 256 256" width="256" height="256">
                     <circle cx="128" cy="128" r="115" stroke="currentColor" stroke-width="8" fill="transparent"
                         class="text-white/5"></circle>
                     <circle id="timer-progress" cx="128" cy="128" r="115" stroke="currentColor" stroke-width="8"
@@ -38,7 +38,7 @@
                         class="text-primary transition-all duration-1000 ease-linear"></circle>
                 </svg>
                 <div class="text-center z-10">
-                    <p id="timer-label" class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-2">Đang
+                    <p id="timer-label" class="text-[10px] font-bold uppercase tracking-[0.3em] pl-[0.3em] text-gray-500 mb-2">Đang
                         tu luyện</p>
                     <div id="timer-display" class="text-7xl font-bold text-gray-100 tabular-nums tracking-tighter">25:00
                     </div>
@@ -57,7 +57,7 @@
 
                 <button id="btn-toggle-timer" onclick="toggleFocusTimer()"
                     class="w-16 h-16 bg-primary text-white rounded-2xl shadow-lg shadow-primary/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
-                    <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                    <svg id="play-icon" class="translate-x-[1.5px]" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
                         fill="currentColor">
                         <polygon points="5 3 19 12 5 21 5 3"></polygon>
                     </svg>
@@ -79,8 +79,8 @@
             </div>
         </div>
 
-        <!-- RIGHT: Config Section (5/12) stacked vertically -->
-        <div class="lg:col-span-5 flex flex-col gap-6">
+        <!-- RIGHT: Config Section (6/12) stacked vertically -->
+        <div class="lg:col-span-6 flex flex-col gap-6">
             <!-- Mode Selector -->
             <div class="bg-card border border-border rounded-2xl p-5 shadow-lg flex-1">
                 <p class="text-[10px] font-bold text-gray-500 uppercase mb-3 tracking-widest">Chu kỳ Tu luyện & Hồi khí</p>

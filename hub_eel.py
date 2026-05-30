@@ -8,6 +8,10 @@ import threading
 import socket
 import ctypes
 import gevent
+import warnings
+
+# Loại bỏ cảnh báo phiền phức từ pygame/pkg_resources
+warnings.filterwarnings("ignore", category=UserWarning, module='pygame.pkgdata')
 
 # Thiết lập AppUserModelID để Windows nhận diện icon Taskbar chính xác
 try:
@@ -52,6 +56,7 @@ from modules.ytb_downloader import universal_downloader # Nhúng module tải đ
 from modules.audio_player import AudioPlayerBackend
 from modules.notifier import NotifierBackend
 from modules.ai_generator import ai_gen
+from modules.epub_manager import epub_manager
 
 # Khởi tạo Python Audio Player ngay từ khi boot app để ngầm
 audio_backend = AudioPlayerBackend(CONFIG_PATHS["yt_downloads"])
@@ -241,6 +246,10 @@ def serve_ambient(filename):
 def serve_thumbnails(filename):
     return bottle.static_file(filename, root=CONFIG_PATHS["yt_thumbnails"])
 
+@bottle.route('/epub/<filename:path>')
+def serve_epub(filename):
+    return bottle.static_file(filename, root=CONFIG_PATHS["epub_data"], mimetype='application/epub+zip')
+
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
@@ -319,6 +328,28 @@ def start_ytb_download(urls_text):
 def get_downloaded_mp3():
     return downloader.get_downloaded_files()
 
+@eel.expose
+def delete_music_track(filename):
+    """Xóa bài hát khỏi Linh Âm Động"""
+    try:
+        # 1. Bảo backend audio dừng và giải phóng file lock
+        audio_backend.remove_track(filename)
+        
+        # 2. Xóa file MP3
+        mp3_path = os.path.join(CONFIG_PATHS["yt_downloads"], filename)
+        if os.path.exists(mp3_path):
+            os.remove(mp3_path)
+            
+        # 3. Xóa file Thumbnail nếu có
+        thumb_name = filename.replace('.mp3', '.jpg')
+        thumb_path = os.path.join(CONFIG_PATHS["yt_thumbnails"], thumb_name)
+        if os.path.exists(thumb_path):
+            os.remove(thumb_path)
+            
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "msg": str(e)}
+
 # --- UNIVERSAL DOWNLOADER API ---
 @eel.expose
 def start_universal_download(urls_text, mode, quality):
@@ -361,13 +392,13 @@ TOEIC_PATH = CONFIG_PATHS["toeic_data"]
 
 @eel.expose
 def get_toeic_data():
-    vocal, grammar = [], []
-    vocal_file = os.path.join(TOEIC_PATH, 'vocal.json')
-    grammar_file = os.path.join(TOEIC_PATH, 'grammar.json')
+    vocal = []
+    vocal_file = os.path.join(TOEIC_PATH, 'words_final.json')
     import time
 
     def heal_data(items, file_p):
         changed = False
+
         for i, item in enumerate(items):
             if "id" not in item:
                 item["id"] = int(time.time() * 1000) + i
@@ -386,6 +417,7 @@ def get_toeic_data():
             if "next_review" not in item:
                 item["next_review"] = None
                 changed = True
+
         if changed:
             with open(file_p, 'w', encoding='utf-8') as f:
                 json.dump(items, f, ensure_ascii=False, indent=4)
@@ -395,13 +427,10 @@ def get_toeic_data():
         if os.path.exists(vocal_file):
             with open(vocal_file, 'r', encoding='utf-8') as f:
                 vocal = heal_data(json.load(f), vocal_file)
-        if os.path.exists(grammar_file):
-            with open(grammar_file, 'r', encoding='utf-8') as f:
-                grammar = heal_data(json.load(f), grammar_file)
     except Exception as e:
         print(f"Lỗi đọc file TOEIC tại {TOEIC_PATH}: {e}")
         
-    return {"vocal": vocal, "grammar": grammar}
+    return {"vocal": vocal, "grammar": []}
 
 @eel.expose
 def generate_toeic_ai(word):
@@ -409,7 +438,7 @@ def generate_toeic_ai(word):
 
 @eel.expose
 def save_toeic_item(item_type, new_item):
-    filename = 'vocal.json' if item_type == 'vocal' else 'grammar.json'
+    filename = 'words_final.json'
     file_path = os.path.join(TOEIC_PATH, filename)
     
     try:
@@ -436,7 +465,7 @@ def save_toeic_item(item_type, new_item):
 
 @eel.expose
 def update_toeic_item(item_type, updated_item):
-    filename = 'vocal.json' if item_type == 'vocal' else 'grammar.json'
+    filename = 'words_final.json'
     file_path = os.path.join(TOEIC_PATH, filename)
     
     try:
@@ -465,13 +494,13 @@ def update_toeic_item(item_type, updated_item):
 
 @eel.expose
 def delete_toeic_item(item_type, item_id):
-    filename = 'vocal.json' if item_type == 'vocal' else 'grammar.json'
+    filename = 'words_final.json'
     file_path = os.path.join(TOEIC_PATH, filename)
     
     # Kiểm tra ID hợp lệ (tránh xóa nhầm ID None/null)
     if item_id is None or item_id == "undefined" or item_id == 0:
         return {"status": "error", "msg": "ID không hợp lệ"}
-
+ 
     try:
         if not os.path.exists(file_path):
             return {"status": "error", "msg": "File không tồn tại"}
@@ -493,7 +522,7 @@ def delete_toeic_item(item_type, item_id):
 
 @eel.expose
 def import_toeic_data(item_type, new_items):
-    filename = 'vocal.json' if item_type == 'vocal' else 'grammar.json'
+    filename = 'words_final.json'
     file_path = os.path.join(TOEIC_PATH, filename)
     
     try:
@@ -799,6 +828,39 @@ def check_ambient_sounds_status():
         "missing": missing
     }
 
+# --- EPUB READER API ---
+@eel.expose
+def get_epub_list():
+    return epub_manager.get_epub_list()
+
+@eel.expose
+def upload_epub(filename, base64_data):
+    return epub_manager.save_epub(filename, base64_data)
+
+@eel.expose
+def delete_epub(filename):
+    return epub_manager.delete_epub(filename)
+
+@eel.expose
+def get_epub_data(filename):
+    return epub_manager.get_epub_data(filename)
+
+@eel.expose
+def create_epub_series(name, filenames):
+    return epub_manager.create_series(name, filenames)
+
+@eel.expose
+def update_epub_series(filename, parts):
+    return epub_manager.update_series_parts(filename, parts)
+
+@eel.expose
+def save_epub_progress(filename, cfi, read_chapters=None):
+    return epub_manager.save_reading_progress(filename, cfi, read_chapters)
+
+@eel.expose
+def get_epub_progress(filename):
+    return epub_manager.get_reading_progress(filename)
+
 @eel.expose
 def add_xp(amount, action_type="manual"):
     stats = get_user_stats()
@@ -1093,8 +1155,7 @@ def check_achievements():
     })
         
     # 2. Học giả (>= 500 level 5 vocabulary cards in TOEIC)
-    vocal_file = os.path.join(CONFIG_PATHS["user_data"], 'toeic_vocal.json')
-    grammar_file = os.path.join(CONFIG_PATHS["user_data"], 'toeic_grammar.json')
+    vocal_file = os.path.join(CONFIG_PATHS["toeic_data"], 'words_final.json')
     
     def count_lvl5(file_p):
         if os.path.exists(file_p):
@@ -1105,7 +1166,7 @@ def check_achievements():
             except: pass
         return 0
         
-    mastered_count = count_lvl5(vocal_file) + count_lvl5(grammar_file)
+    mastered_count = count_lvl5(vocal_file)
     
     achievements.append({
         "id": "hoc_gia",
@@ -1224,8 +1285,7 @@ def setup_tray():
 def on_close_window(page, websockets):
     global is_window_open
     is_window_open = False
-    print("Cửa sổ đã tắt, tiếp tục chạy ngầm...")
-    # Lệnh pass không cần thiết nhưng có thể giữ lại để logic không rỗng
+    print("Window closed, continuing in background...")
     pass
 
 import urllib.request

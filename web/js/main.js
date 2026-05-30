@@ -29,6 +29,7 @@ async function loadModule(btnElement, moduleName) {
         if (moduleName === 'reminders') initReminders();
         if (moduleName === 'omniloader') initOmniloader();
         if (moduleName === 'focus') initFocus();
+        if (moduleName === 'epub') initEpub();
 
     } catch (error) {
         contentArea.innerHTML = "Lỗi tải dữ liệu.";

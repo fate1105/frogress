@@ -4,7 +4,7 @@ import PyInstaller.__main__
 import sys
 
 # --- CẤU HÌNH PHIÊN BẢN ---
-VERSION = "1.2"
+VERSION = "1.3"
 # --------------------------
 
 def update_version_info(version_str):

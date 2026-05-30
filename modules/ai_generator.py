@@ -40,24 +40,31 @@ class AIGenerator:
 
         prompt = f"""
         Generate exactly ONE vocabulary entry for EACH of the following English words: {', '.join(words)}.
-        For each word, the entry must test its Vietnamese meaning.
+        For each word, generate premium dictionary-grade learning data.
         Return the result strictly as a JSON array of objects. 
         Each object MUST have:
-        - "question": The English word and its part of speech in parentheses, e.g., "Substantial (adj)".
-        - "options": An array of 4 strings in Vietnamese (1 correct meaning, 3 plausible but incorrect meanings).
-        - "answer": The correct Vietnamese meaning from the options.
+        - "word": The word itself (all lowercase unless proper noun), e.g., "substantial".
+        - "meaning_vn": Clear Vietnamese translation, e.g., "lớn lao, đáng kể".
+        - "partOfSpeech": Lowercase grammatical part of speech, e.g., "adjective", "noun", "verb", "adverb".
+        - "phonetic": International Phonetic Alphabet (IPA) representation, e.g., "/səbˈstæn.ʃəl/".
+        - "definition_en": Simple, concise English definition, e.g., "large in size, value, or importance".
+        - "definition_vn": Concise Vietnamese definition, e.g., "lớn về kích thước, giá trị hoặc tầm quan trọng".
+        - "example": A realistic, helpful usage example sentence containing the word, e.g., "The findings show a substantial difference between the two groups.".
+        - "topic": One of these specific topics: 'Daily Life', 'Business', 'Technology', 'Entertainment', 'Travel', 'Health', 'Education', 'Finance', 'General', 'Family', 'Sports'.
+        - "level": English learner level: "A1", "A2", "B1", "B2", "C1", or "C2".
 
-        Example format for input "fate, revenue":
+        Example format:
         [
             {{
-                "question": "Fate (n)",
-                "options": ["Vận mệnh", "Lịch sử", "Kích thước", "Tốc độ"],
-                "answer": "Vận mệnh"
-            }},
-            {{
-                "question": "Revenue (n)",
-                "options": ["Doanh thu", "Chi phí", "Nhân sự", "Đầu tư"],
-                "answer": "Doanh thu"
+                "word": "fate",
+                "meaning_vn": "vận mệnh, số phận",
+                "partOfSpeech": "noun",
+                "phonetic": "/feɪt/",
+                "definition_en": "a power that some people believe controls and decides everything that happens",
+                "definition_vn": "sức mạnh mà một số người tin là kiểm soát và quyết định mọi việc xảy ra",
+                "example": "We still don't know the fate of the missing plane.",
+                "topic": "General",
+                "level": "B1"
             }}
         ]
         """

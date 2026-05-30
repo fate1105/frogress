@@ -155,7 +155,7 @@ function updateTimerDisplay() {
     progress.classList.add(colorClass);
 
     const total = presetObj[currentMode];
-    const offset = 816 - (remainingSeconds / total) * 816;
+    const offset = 722 - (remainingSeconds / total) * 722;
     progress.style.strokeDashoffset = offset;
 
     document.title = isRunning ? `(${timeStr}) Frogress` : "Frogress";
