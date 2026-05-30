@@ -551,7 +551,7 @@ async function loadBookPart(filename, initialCfi = null) {
 
             // Container for the part items so we can collapse/expand it easily
             const partsContainer = document.createElement('div');
-            partsContainer.className = `transition-all duration-200 overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0 mt-0' : 'max-h-[500px] opacity-100 mt-2'}`;
+            partsContainer.className = `transition-all duration-200 overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0 mt-0' : 'max-h-[9999px] opacity-100 mt-2'}`;
 
             // Add each part as a clickable item
             currentSeries.parts.forEach((partName, idx) => {
@@ -581,12 +581,12 @@ async function loadBookPart(filename, initialCfi = null) {
                 const arrow = seriesHeader.querySelector('.arrow-icon');
                 if (isCollapsed) {
                     arrow.style.transform = 'rotate(-90deg)';
-                    partsContainer.classList.remove('max-h-[500px]', 'opacity-100', 'mt-2');
+                    partsContainer.classList.remove('max-h-[9999px]', 'opacity-100', 'mt-2');
                     partsContainer.classList.add('max-h-0', 'opacity-0', 'mt-0');
                 } else {
                     arrow.style.transform = 'rotate(0deg)';
                     partsContainer.classList.remove('max-h-0', 'opacity-0', 'mt-0');
-                    partsContainer.classList.add('max-h-[500px]', 'opacity-100', 'mt-2');
+                    partsContainer.classList.add('max-h-[9999px]', 'opacity-100', 'mt-2');
                 }
             };
 
