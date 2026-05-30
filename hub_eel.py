@@ -1124,9 +1124,29 @@ def on_show(icon, item):
             print("Lỗi bật cửa sổ:", e)
 
 def on_quit(icon, item):
-    icon.stop()
-    audio_backend.stop()
-    notifier_backend.stop()
+    try:
+        icon.stop()
+    except Exception:
+        pass
+    try:
+        audio_backend.stop()
+    except Exception:
+        pass
+    try:
+        notifier_backend.stop()
+    except Exception:
+        pass
+    os._exit(0)
+
+def cleanup_and_exit():
+    try:
+        audio_backend.stop()
+    except Exception:
+        pass
+    try:
+        notifier_backend.stop()
+    except Exception:
+        pass
     os._exit(0)
 
 # --- THIÊN ĐẠO BẢNG: ACHIEVEMENTS SYSTEM ---

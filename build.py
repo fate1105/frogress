@@ -109,25 +109,21 @@ if __name__ == "__main__":
     import shutil
     dist_dir = os.path.join(base_dir, "dist")
     app_name = "Frogress"
-    versioned_folder = f"Frogress_v{VERSION}"
     zip_path = os.path.join(dist_dir, f"Frogress_v{VERSION}_Release")
     
-    print(f"\n[*] Đóng gói {versioned_folder} thành file ZIP...")
+    print(f"\n[*] Đóng gói thư mục {app_name} thành file ZIP...")
     try:
         source_dir = os.path.join(dist_dir, app_name)
-        target_dir = os.path.join(dist_dir, versioned_folder)
-        
-        # Đổi tên thư mục thành bản có version
         if os.path.exists(source_dir):
-            if os.path.exists(target_dir):
-                shutil.rmtree(target_dir)
-            os.rename(source_dir, target_dir)
-            
-            # Nén thư mục đã đổi tên
-            shutil.make_archive(zip_path, 'zip', root_dir=dist_dir, base_dir=versioned_folder)
+            # Nén trực tiếp thư mục Frogress cố định để tránh hỏng Shortcut của người dùng
+            shutil.make_archive(zip_path, 'zip', root_dir=dist_dir, base_dir=app_name)
             print(f"[*] Đã tạo file ZIP: {zip_path}.zip")
     except Exception as e:
         print(f"[!] Lỗi khi nén thư mục: {e}")
+        if "Access is denied" in str(e) or "PermissionError" in str(e) or "WinError 5" in str(e):
+            print("\n💡 GỢI Ý KHẮC PHỤC:")
+            print("   1. Hãy chắc chắn rằng ứng dụng Frogress.exe CŨ không còn chạy ẩn (Mở Task Manager, tìm và End Task 'Frogress.exe' nếu có).")
+            print("   2. Hãy ĐÓNG tất cả các cửa sổ File Explorer đang mở bên trong hoặc xem thư mục 'dist/Frogress' và thử lại.")
 
     print("===========================================")
     print("BUILD COMPLETE!")
@@ -136,6 +132,6 @@ if __name__ == "__main__":
     print("===========================================")
     print(f"SUCCESS! Ứng dụng bản v{VERSION} đã sẵn sàng trong thư mục /dist.")
     print(f"--> HÃY GỬI FILE [{os.path.basename(zip_path)}.zip] CHO NGƯỜI DÙNG <--")
-    print(f"Người dùng chỉ cần giải nén file ZIP và chạy Frogress.exe (trong thư mục {versioned_folder})")
+    print(f"Người dùng chỉ cần giải nén file ZIP và chạy Frogress.exe (trong thư mục {app_name})")
     print("Điều này giúp chống bị Windows Defender xóa mất file.")
     print("===========================================")
